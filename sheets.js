@@ -74,6 +74,88 @@ const Sheets = (() => {
     }));
   }
 
-  return { appendRow, readAll };
+  // ── Eliminar fila per fileId ─────────────────
+  async function deleteRowByFileId(fileId) {
+    // Primer llegim totes les files per trobar el número de fila
+    const range = `'${CONFIG.SHEET_NAME}'!A:J`;
+    const endpoint = `${BASE}/${CONFIG.SPREADSHEET_ID}/values/${encodeURIComponent(range)}`;
+    const res = await fetch(endpoint, { headers: _headers() });
+    if (!res.ok) throw new Error('Error llegint Sheets');
+
+    const data = await res.json();
+    const rows = data.values || [];
+
+    // Buscar la fila que té el fileId (columna B, índex 1)
+    let rowIndex = -1;
+    for (let i = 0; i < rows.length; i++) {
+      if (rows[i][1] === fileId) { rowIndex = i; break; }
+    }
+
+    if (rowIndex === -1) throw new Error('Fila no trobada al Sheets');
+
+    // Obtenir sheetId (necessari per eliminar fila)
+    const metaRes = await fetch(`${BASE}/${CONFIG.SPREADSHEET_ID}`, { headers: _headers() });
+    const meta = await metaRes.json();
+    const sheet = meta.sheets.find(s => s.properties.title === CONFIG.SHEET_NAME);
+    const sheetId = sheet.properties.sheetId;
+
+    // Eliminar la fila
+    const deleteRes = await fetch(`${BASE}/${CONFIG.SPREADSHEET_ID}:batchUpdate`, {
+      method: 'POST',
+      headers: _headers(),
+      body: JSON.stringify({
+        requests: [{
+          deleteDimension: {
+            range: {
+              sheetId:    sheetId,
+              dimension:  'ROWS',
+              startIndex: rowIndex,
+              endIndex:   rowIndex + 1,
+            }
+          }
+        }]
+      })
+    });
+
+    if (!deleteRes.ok) throw new Error('Error eliminant fila del Sheets');
+  }
+
+  // ── Actualitzar fila per fileId ──────────────
+  async function updateRowByFileId(fileId, data) {
+    const range = `'${CONFIG.SHEET_NAME}'!A:J`;
+    const endpoint = `${BASE}/${CONFIG.SPREADSHEET_ID}/values/${encodeURIComponent(range)}`;
+    const res = await fetch(endpoint, { headers: _headers() });
+    if (!res.ok) throw new Error('Error llegint Sheets');
+
+    const json = await res.json();
+    const rows = json.values || [];
+
+    let rowIndex = -1;
+    for (let i = 0; i < rows.length; i++) {
+      if (rows[i][1] === fileId) { rowIndex = i + 1; break; } // +1 perquè Sheets és 1-indexed
+    }
+    if (rowIndex === -1) throw new Error('Fila no trobada');
+
+    const updateRange = `'${CONFIG.SHEET_NAME}'!D${rowIndex}:H${rowIndex}`;
+    const updateEndpoint = `${BASE}/${CONFIG.SPREADSHEET_ID}/values/${encodeURIComponent(updateRange)}?valueInputOption=RAW`;
+
+    const updateRes = await fetch(updateEndpoint, {
+      method: 'PUT',
+      headers: _headers(),
+      body: JSON.stringify({
+        values: [[
+          data.any,
+          data.lloc,
+          Array.isArray(data.persones)  ? data.persones.join(', ')  : '',
+          Array.isArray(data.categoria) ? data.categoria.join(', ') : '',
+          data.notes || '',
+        ]]
+      })
+    });
+
+    if (!updateRes.ok) throw new Error('Error actualitzant Sheets');
+  }
+
+  return { appendRow, readAll, deleteRowByFileId, updateRowByFileId };
 
 })();

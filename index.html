@@ -38,6 +38,10 @@
       <div class="header-logo">
         <span class="logo-ann">Ann</span><span class="logo-app">App</span><span class="logo-40">40</span>
       </div>
+      <nav class="header-nav">
+        <button class="nav-tab active" data-tab="pujar">📷 Pujar</button>
+        <button class="nav-tab" data-tab="mevefotos">🖼️ Les meves fotos</button>
+      </nav>
       <div class="header-user">
         <img id="user-avatar" src="" alt="avatar" class="avatar" />
         <span id="user-name"></span>
@@ -141,6 +145,72 @@
       </div>
 
     </main>
+
+    <!-- TAB: LES MEVES FOTOS -->
+    <main id="tab-mevefotos" class="app-main hidden">
+      <div class="meves-header">
+        <h2 class="section-title">Les meves fotos</h2>
+        <button id="btn-reload" class="btn-secondary">↻ Actualitzar</button>
+      </div>
+      <div id="meves-loading" class="meves-loading">Carregant fotos...</div>
+      <div id="meves-empty" class="meves-empty hidden">Encara no has pujat cap foto.</div>
+      <div id="meves-grid" class="meves-grid"></div>
+    </main>
+
+    <!-- MODAL: VEURE/EDITAR FOTO -->
+    <div id="modal-overlay" class="modal-overlay hidden">
+      <div class="modal-card">
+        <button id="modal-close" class="modal-close">✕</button>
+        <div class="modal-img-wrap">
+          <img id="modal-img" src="" alt="" />
+        </div>
+        <div class="modal-body">
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Any</label>
+              <input type="number" id="modal-any" class="form-input" min="1990" max="2030" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Lloc</label>
+              <input type="text" id="modal-lloc" class="form-input" />
+            </div>
+            <div class="form-group full-width">
+              <label class="form-label">Categoria</label>
+              <div class="tag-chips" id="modal-chips-categoria">
+                <button class="chip" data-value="Festa">🎉 Festa</button>
+                <button class="chip" data-value="Viatges">✈️ Viatges</button>
+                <button class="chip" data-value="Platja">🏖️ Platja</button>
+                <button class="chip" data-value="Dinar">🍽️ Dinar</button>
+                <button class="chip" data-value="Aniversari">🎂 Aniversari</button>
+                <button class="chip" data-value="Sopar">🌙 Sopar</button>
+                <button class="chip" data-value="Nadal">🎄 Nadal</button>
+                <button class="chip" data-value="Esport">⚽ Esport</button>
+                <button class="chip" data-value="Barça">🔵🔴 Barça</button>
+                <button class="chip" data-value="Barbacoa">🔥 Barbacoa</button>
+                <button class="chip" data-value="Karaoke">🎤 Karaoke</button>
+                <button class="chip" data-value="Bar">🍻 Bar</button>
+              </div>
+            </div>
+            <div class="form-group full-width">
+              <label class="form-label">Persones</label>
+              <div class="tag-chips" id="modal-chips-persones"></div>
+              <div class="add-persona">
+                <input type="text" id="modal-input-persona" class="form-input small" placeholder="Afegir persona..." />
+                <button id="modal-btn-add-persona" class="btn-secondary">+ Afegir</button>
+              </div>
+            </div>
+            <div class="form-group full-width">
+              <label class="form-label">Notes</label>
+              <textarea id="modal-notes" class="form-input" rows="2"></textarea>
+            </div>
+          </div>
+          <div class="modal-actions">
+            <button id="modal-btn-delete" class="btn-delete">🗑️ Eliminar foto</button>
+            <button id="modal-btn-save" class="btn-upload" style="flex:1;margin-top:0">Guardar canvis</button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- ERROR TOAST -->
