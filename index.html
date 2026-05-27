@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AnnApp40 — Afegeix fotos</title>
+  <meta name="description" content="Puja fotos i etiqueta-les per a l'Anna" />
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#1a1a2e" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/main.css" />
+</head>
+<body>
+
+  <!-- LOGIN SCREEN -->
+  <div id="screen-login" class="screen active">
+    <div class="login-bg"></div>
+    <div class="login-card">
+      <div class="app-logo">
+        <span class="logo-ann">Ann</span><span class="logo-app">App</span><span class="logo-40">40</span>
+      </div>
+      <p class="login-subtitle">El racó de les nostres fotos</p>
+      <button id="btn-google-login" class="btn-google">
+        <svg width="20" height="20" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/><path fill="#FF3D00" d="m6.306 14.691 6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/><path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238A11.91 11.91 0 0 1 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/><path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 0 1-4.087 5.571l.003-.002 6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/></svg>
+        Entra amb Google
+      </button>
+      <p class="login-note">Només membres del grup poden accedir</p>
+    </div>
+  </div>
+
+  <!-- MAIN APP -->
+  <div id="screen-app" class="screen">
+
+    <!-- HEADER -->
+    <header class="app-header">
+      <div class="header-logo">
+        <span class="logo-ann">Ann</span><span class="logo-app">App</span><span class="logo-40">40</span>
+      </div>
+      <div class="header-user">
+        <img id="user-avatar" src="" alt="avatar" class="avatar" />
+        <span id="user-name"></span>
+        <button id="btn-logout" class="btn-logout" title="Tancar sessió">↩</button>
+      </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="app-main">
+
+      <!-- UPLOAD ZONE -->
+      <section class="upload-section">
+        <div id="drop-zone" class="drop-zone">
+          <div class="drop-icon">📷</div>
+          <p class="drop-title">Arrossega fotos aquí</p>
+          <p class="drop-sub">o</p>
+          <label class="btn-primary" for="file-input">Selecciona fotos</label>
+          <input type="file" id="file-input" accept="image/*" multiple hidden />
+        </div>
+
+        <!-- PREVIEW -->
+        <div id="preview-container" class="preview-container hidden">
+          <div id="preview-grid" class="preview-grid"></div>
+        </div>
+      </section>
+
+      <!-- TAGS FORM -->
+      <section id="tags-section" class="tags-section hidden">
+        <h2 class="section-title">Etiqueta les fotos</h2>
+
+        <div class="form-grid">
+
+          <!-- Any -->
+          <div class="form-group">
+            <label class="form-label">Any</label>
+            <input type="number" id="tag-any" class="form-input" placeholder="2024" min="1990" max="2030" />
+          </div>
+
+          <!-- Lloc -->
+          <div class="form-group">
+            <label class="form-label">Lloc</label>
+            <input type="text" id="tag-lloc" class="form-input" placeholder="Barcelona, platja, casa..." />
+          </div>
+
+          <!-- Categoria -->
+          <div class="form-group">
+            <label class="form-label">Categoria</label>
+            <div class="tag-chips" id="chips-categoria">
+              <button class="chip" data-value="Festa">🎉 Festa</button>
+              <button class="chip" data-value="Viatges">✈️ Viatges</button>
+              <button class="chip" data-value="Platja">🏖️ Platja</button>
+              <button class="chip" data-value="Dinar">🍽️ Dinar</button>
+              <button class="chip" data-value="Aniversari">🎂 Aniversari</button>
+              <button class="chip" data-value="Sopar">🌙 Sopar</button>
+              <button class="chip" data-value="Nadal">🎄 Nadal</button>
+              <button class="chip" data-value="Esport">⚽ Esport</button>
+              <button class="chip" data-value="Barça">🔵🔴 Barça</button>
+              <button class="chip" data-value="Barbacoa">🔥 Barbacoa</button>
+              <button class="chip" data-value="Karaoke">🎤 Karaoke</button>
+              <button class="chip" data-value="Bar">🍻 Bar</button>
+            </div>
+          </div>
+
+          <!-- Persones -->
+          <div class="form-group full-width">
+            <label class="form-label">Qui surt a les fotos?</label>
+            <div class="tag-chips" id="chips-persones"></div>
+            <div class="add-persona">
+              <input type="text" id="input-nova-persona" class="form-input small" placeholder="Afegir persona..." />
+              <button id="btn-add-persona" class="btn-secondary">+ Afegir</button>
+            </div>
+          </div>
+
+          <!-- Notes -->
+          <div class="form-group full-width">
+            <label class="form-label">Notes (opcional)</label>
+            <textarea id="tag-notes" class="form-input" rows="2" placeholder="Alguna cosa a destacar..."></textarea>
+          </div>
+
+        </div>
+
+        <button id="btn-upload" class="btn-upload">
+          <span id="btn-upload-text">Pujar fotos</span>
+          <span id="btn-upload-spinner" class="spinner hidden"></span>
+        </button>
+
+      </section>
+
+      <!-- PROGRESS -->
+      <div id="progress-container" class="progress-container hidden">
+        <div class="progress-bar-wrap">
+          <div id="progress-bar" class="progress-bar"></div>
+        </div>
+        <p id="progress-text" class="progress-text">Pujant...</p>
+      </div>
+
+      <!-- SUCCESS -->
+      <div id="success-msg" class="success-msg hidden">
+        ✅ Fotos pujades correctament!
+        <button id="btn-more" class="btn-link">Pujar més fotos</button>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- ERROR TOAST -->
+  <div id="toast" class="toast hidden"></div>
+
+  <!-- GOOGLE API -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="https://apis.google.com/js/api.js"></script>
+
+  <!-- APP SCRIPTS -->
+  <script src="js/config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/sheets.js"></script>
+  <script src="js/drive.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+</html>
