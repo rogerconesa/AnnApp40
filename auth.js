@@ -5,9 +5,9 @@
 
 const Auth = (() => {
 
-  let _tokenClient = null;
-  let _accessToken  = null;
-  let _userProfile  = null;
+  let _tokenClient      = null;
+  let _accessToken      = null;
+  let _userProfile      = null;
   let _onLoginCallback  = null;
   let _onLogoutCallback = null;
 
@@ -16,14 +16,19 @@ const Auth = (() => {
     _onLoginCallback  = onLogin;
     _onLogoutCallback = onLogout;
 
-    // Inicialitzar GIS token client
+    // Esperar que GIS estigui carregat
+    if (typeof google === 'undefined' || !google.accounts) {
+      setTimeout(() => init(onLogin, onLogout), 200);
+      return;
+    }
+
     _tokenClient = google.accounts.oauth2.initTokenClient({
       client_id: CONFIG.CLIENT_ID,
       scope:     CONFIG.SCOPES,
       callback:  _handleTokenResponse,
     });
 
-    // Intentar recuperar sessió guardada
+    // Recuperar sessió guardada
     const saved = sessionStorage.getItem('annapp40_token');
     if (saved) {
       _accessToken = saved;
@@ -33,7 +38,8 @@ const Auth = (() => {
 
   // ── Login ────────────────────────────────────
   function login() {
-    _tokenClient.requestAccessToken({ prompt: 'consent' });
+    // Sense prompt:'consent' per evitar demanar permisos cada vegada
+    _tokenClient.requestAccessToken({});
   }
 
   // ── Logout ───────────────────────────────────
@@ -49,10 +55,19 @@ const Auth = (() => {
 
   // ── Token response ────────────────────────────
   function _handleTokenResponse(resp) {
+    console.log('Token response:', resp);
+
     if (resp.error) {
-      UI.showToast('Error d\'autenticació: ' + resp.error, 'error');
+      console.error('Auth error:', resp.error);
+      alert('Error d\'autenticació: ' + resp.error);
       return;
     }
+
+    if (!resp.access_token) {
+      console.error('No access_token rebut');
+      return;
+    }
+
     _accessToken = resp.access_token;
     sessionStorage.setItem('annapp40_token', _accessToken);
     _loadUserProfile();
@@ -60,24 +75,29 @@ const Auth = (() => {
 
   // ── Carregar perfil d'usuari ──────────────────
   async function _loadUserProfile() {
+    console.log('Carregant perfil amb token:', _accessToken ? _accessToken.substring(0,20) + '...' : 'NULL');
+
     try {
       const res = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-        headers: { Authorization: 'Bearer ' + _accessToken }
+        headers: { 'Authorization': 'Bearer ' + _accessToken }
       });
 
+      console.log('Userinfo status:', res.status);
+
       if (!res.ok) {
-        // Token caducat
+        console.error('Token invàlid o caducat, status:', res.status);
         _accessToken = null;
         sessionStorage.removeItem('annapp40_token');
         return;
       }
 
       _userProfile = await res.json();
+      console.log('Perfil carregat:', _userProfile.name);
+
       if (_onLoginCallback) _onLoginCallback(_userProfile);
 
     } catch (err) {
       console.error('Error carregant perfil:', err);
-      UI.showToast('Error de connexió', 'error');
     }
   }
 
