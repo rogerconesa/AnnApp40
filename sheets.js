@@ -32,7 +32,7 @@ const Sheets = (() => {
       new Date().toISOString(),
     ];
 
-    const range = `${CONFIG.SHEET_NAME}!A:J`;
+    const range = `'${CONFIG.SHEET_NAME}'!A:J`;
     const endpoint = `${BASE}/${CONFIG.SPREADSHEET_ID}/values/${encodeURIComponent(range)}:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS`;
 
     const res = await fetch(endpoint, {
@@ -51,7 +51,7 @@ const Sheets = (() => {
 
   // ── Llegir totes les files ───────────────────
   async function readAll() {
-    const range = `${CONFIG.SHEET_NAME}!A2:J`;
+    const range = `'${CONFIG.SHEET_NAME}'!A2:J`;
     const endpoint = `${BASE}/${CONFIG.SPREADSHEET_ID}/values/${encodeURIComponent(range)}`;
 
     const res = await fetch(endpoint, { headers: _headers() });
