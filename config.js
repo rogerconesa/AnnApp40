@@ -11,7 +11,7 @@ const CONFIG = {
 
   // Google Sheets — base de dades de metadades
   SPREADSHEET_ID: '1j9z53zI9LDy8lo__A1ZXq8H4MUqQ8kaSR9JYA-WHzIE',
-  SHEET_NAME: 'fotos40anna-db',
+  SHEET_NAME: 'fotos40anna',
 
   // Scopes necessaris — inclou openid/profile/email per obtenir dades d'usuari
   SCOPES: [
