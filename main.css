@@ -547,3 +547,14 @@ body {
   .app-main { padding: 1.5rem 1rem 3rem; }
   .login-card { padding: 2rem 1.5rem; margin: 1rem; }
 }
+
+.login-request {
+  display: block;
+  margin-top: 1rem;
+  font-size: 0.82rem;
+  color: var(--accent);
+  text-decoration: none;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+.login-request:hover { opacity: 1; text-decoration: underline; }

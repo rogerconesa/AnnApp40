@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AnnApp40 — Sol·licitar accés</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="main.css" />
+  <style>
+    .solicitud-wrap {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .solicitud-bg {
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 20% 50%, rgba(233,69,96,0.15) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 20%, rgba(245,166,35,0.1) 0%, transparent 50%),
+        #0f0f1a;
+      z-index: 0;
+    }
+    .solicitud-card {
+      position: relative;
+      z-index: 1;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 24px;
+      padding: 3rem 2.5rem;
+      width: 100%;
+      max-width: 420px;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+      animation: fadeUp 0.6s ease both;
+      margin: 1rem;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #8888aa;
+      text-decoration: none;
+      font-size: 0.85rem;
+      margin-bottom: 1.5rem;
+      transition: color 0.2s;
+    }
+    .back-link:hover { color: #e94560; }
+    .solicitud-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem;
+      font-weight: 900;
+      margin-bottom: 0.5rem;
+    }
+    .solicitud-sub {
+      color: #8888aa;
+      font-size: 0.9rem;
+      margin-bottom: 2rem;
+      line-height: 1.5;
+    }
+    .success-card {
+      text-align: center;
+      padding: 1rem 0;
+    }
+    .success-icon { font-size: 3rem; margin-bottom: 1rem; }
+    .success-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+    }
+    .success-text { color: #8888aa; font-size: 0.9rem; line-height: 1.6; }
+  </style>
+</head>
+<body>
+  <div class="solicitud-bg"></div>
+  <div class="solicitud-wrap">
+    <div class="solicitud-card">
+
+      <a href="/" class="back-link">← Tornar al login</a>
+
+      <div id="form-container">
+        <div class="app-logo" style="margin-bottom:0.5rem">
+          <span class="logo-ann">Ann</span><span class="logo-app">App</span><span class="logo-40">40</span>
+        </div>
+        <h1 class="solicitud-title">Sol·licitar accés</h1>
+        <p class="solicitud-sub">Envia una sol·licitud a en Roger i t'afegirà a la llista en breu.</p>
+
+        <div class="form-group" style="margin-bottom:1rem">
+          <label class="form-label">El teu nom</label>
+          <input type="text" id="input-nom" class="form-input" placeholder="Anna, Jordi, Maria..." />
+        </div>
+
+        <div class="form-group" style="margin-bottom:1.5rem">
+          <label class="form-label">El teu Gmail</label>
+          <input type="email" id="input-email" class="form-input" placeholder="el-teu-nom@gmail.com" />
+          <p style="font-size:0.75rem;color:#8888aa;margin-top:6px">Ha de ser el compte de Google amb el qual vols accedir</p>
+        </div>
+
+        <button id="btn-enviar" class="btn-upload" style="margin-top:0">
+          <span id="btn-text">Enviar sol·licitud</span>
+          <span id="btn-spinner" class="spinner hidden"></span>
+        </button>
+
+        <div id="error-msg" class="hidden" style="margin-top:1rem;color:#e94560;font-size:0.85rem;text-align:center"></div>
+      </div>
+
+      <div id="success-container" class="success-card hidden">
+        <div class="success-icon">✅</div>
+        <h2 class="success-title">Sol·licitud enviada!</h2>
+        <p class="success-text">En Roger ha rebut el teu email i t'afegirà a la llista en breu.<br><br>Un cop t'avisi, torna a <a href="/" style="color:#e94560">entrar a l'app</a>.</p>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script>
+    emailjs.init('-EpStee0U9WoRlxLZ');
+
+    document.getElementById('btn-enviar').addEventListener('click', async () => {
+      const nom   = document.getElementById('input-nom').value.trim();
+      const email = document.getElementById('input-email').value.trim();
+      const errorEl = document.getElementById('error-msg');
+
+      // Validació
+      errorEl.classList.add('hidden');
+      if (!nom) {
+        errorEl.textContent = 'El nom és obligatori';
+        errorEl.classList.remove('hidden');
+        return;
+      }
+      if (!email || !email.includes('@')) {
+        errorEl.textContent = 'Introdueix un email vàlid';
+        errorEl.classList.remove('hidden');
+        return;
+      }
+
+      // Loading
+      document.getElementById('btn-text').classList.add('hidden');
+      document.getElementById('btn-spinner').classList.remove('hidden');
+      document.getElementById('btn-enviar').disabled = true;
+
+      try {
+        await emailjs.send('fotos40anna', 'template_wietvmv', {
+          nom:   nom,
+          email: email,
+          data:  new Date().toLocaleString('ca-ES'),
+        });
+
+        document.getElementById('form-container').classList.add('hidden');
+        document.getElementById('success-container').classList.remove('hidden');
+
+      } catch (err) {
+        console.error('Error EmailJS:', err);
+        errorEl.textContent = 'Error enviant la sol·licitud. Torna-ho a intentar.';
+        errorEl.classList.remove('hidden');
+        document.getElementById('btn-text').classList.remove('hidden');
+        document.getElementById('btn-spinner').classList.add('hidden');
+        document.getElementById('btn-enviar').disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
