@@ -13,8 +13,11 @@ const CONFIG = {
   SPREADSHEET_ID: '1j9z53zI9LDy8lo__A1ZXq8H4MUqQ8kaSR9JYA-WHzIE',
   SHEET_NAME: 'fotos40anna-db',
 
-  // Scopes necessaris
+  // Scopes necessaris — inclou openid/profile/email per obtenir dades d'usuari
   SCOPES: [
+    'openid',
+    'profile',
+    'email',
     'https://www.googleapis.com/auth/drive.file',
     'https://www.googleapis.com/auth/spreadsheets'
   ].join(' '),
