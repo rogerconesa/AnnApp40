@@ -15,9 +15,9 @@ const Sheets = (() => {
   }
 
   // ── Afegir una fila de metadades ─────────────
-  // Columnes: id | fileId | url | any | lloc | persones | categoria | notes | pujatPer | data
+  // Columnes: id | fileId | url | any | lloc | persones | categoria | notes | pujatNom | pujatEmail | data
   async function appendRow(data) {
-    const { id, fileId, url, any, lloc, persones, categoria, notes, pujatPer } = data;
+    const { id, fileId, url, any, lloc, persones, categoria, notes, pujatNom, pujatEmail } = data;
 
     const row = [
       id,
@@ -25,14 +25,15 @@ const Sheets = (() => {
       url,
       any        || '',
       lloc       || '',
-      Array.isArray(persones) ? persones.join(', ') : (persones || ''),
+      Array.isArray(persones)  ? persones.join(', ')  : (persones  || ''),
       Array.isArray(categoria) ? categoria.join(', ') : (categoria || ''),
       notes      || '',
-      pujatPer   || '',
+      pujatNom   || '',
+      pujatEmail || '',
       new Date().toISOString(),
     ];
 
-    const range = `${CONFIG.SHEET_NAME}!A:J`;
+    const range = `'${CONFIG.SHEET_NAME}'!A:K`;
     const endpoint = `${BASE}/${CONFIG.SPREADSHEET_ID}/values/${encodeURIComponent(range)}:append?valueInputOption=RAW&insertDataOption=INSERT_ROWS`;
 
     const res = await fetch(endpoint, {
@@ -51,7 +52,7 @@ const Sheets = (() => {
 
   // ── Llegir totes les files ───────────────────
   async function readAll() {
-    const range = `${CONFIG.SHEET_NAME}!A2:J`;
+    const range = `'${CONFIG.SHEET_NAME}'!A2:K`;
     const endpoint = `${BASE}/${CONFIG.SPREADSHEET_ID}/values/${encodeURIComponent(range)}`;
 
     const res = await fetch(endpoint, { headers: _headers() });
@@ -61,23 +62,24 @@ const Sheets = (() => {
     const rows = data.values || [];
 
     return rows.map(r => ({
-      id:        r[0] || '',
-      fileId:    r[1] || '',
-      url:       r[2] || '',
-      any:       r[3] || '',
-      lloc:      r[4] || '',
-      persones:  r[5] ? r[5].split(', ') : [],
-      categoria: r[6] ? r[6].split(', ') : [],
-      notes:     r[7] || '',
-      pujatPer:  r[8] || '',
-      data:      r[9] || '',
+      id:         r[0] || '',
+      fileId:     r[1] || '',
+      url:        r[2] || '',
+      any:        r[3] || '',
+      lloc:       r[4] || '',
+      persones:   r[5] ? r[5].split(', ') : [],
+      categoria:  r[6] ? r[6].split(', ') : [],
+      notes:      r[7] || '',
+      pujatNom:   r[8] || '',
+      pujatEmail: r[9] || '',
+      data:       r[10] || '',
     }));
   }
 
   // ── Eliminar fila per fileId ─────────────────
   async function deleteRowByFileId(fileId) {
     // Primer llegim totes les files per trobar el número de fila
-    const range = `'${CONFIG.SHEET_NAME}'!A:J`;
+    const range = `'${CONFIG.SHEET_NAME}'!A:K`;
     const endpoint = `${BASE}/${CONFIG.SPREADSHEET_ID}/values/${encodeURIComponent(range)}`;
     const res = await fetch(endpoint, { headers: _headers() });
     if (!res.ok) throw new Error('Error llegint Sheets');
@@ -122,7 +124,7 @@ const Sheets = (() => {
 
   // ── Actualitzar fila per fileId ──────────────
   async function updateRowByFileId(fileId, data) {
-    const range = `'${CONFIG.SHEET_NAME}'!A:J`;
+    const range = `'${CONFIG.SHEET_NAME}'!A:K`;
     const endpoint = `${BASE}/${CONFIG.SPREADSHEET_ID}/values/${encodeURIComponent(range)}`;
     const res = await fetch(endpoint, { headers: _headers() });
     if (!res.ok) throw new Error('Error llegint Sheets');
