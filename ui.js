@@ -100,25 +100,27 @@ const UI = (() => {
     });
   }
 
-  // ── Places Autocomplete (Google Maps) ─────────
-  let _autocompleteInstances = {};
-
+  // ── Places Autocomplete (Google Maps nova API) ──
   function initPlacesAutocomplete(inputId, latId, lngId, dropdownId) {
     const input    = document.getElementById(inputId);
     const dropdown = document.getElementById(dropdownId);
     if (!input || !dropdown) return;
 
-    let _debounce = null;
+    let _debounce   = null;
+    let _sessionToken = null;
+
+    function _getToken() {
+      if (!_sessionToken && typeof google !== 'undefined' && google.maps?.places?.AutocompleteSessionToken) {
+        _sessionToken = new google.maps.places.AutocompleteSessionToken();
+      }
+      return _sessionToken;
+    }
 
     input.addEventListener('input', () => {
       clearTimeout(_debounce);
       const val = input.value.trim();
-      if (val.length < 3) { dropdown.classList.add('hidden'); return; }
-
-      _debounce = setTimeout(async () => {
-        const results = await _fetchPlaces(val);
-        _renderDropdown(results, input, latId, lngId, dropdown);
-      }, 300);
+      if (val.length < 2) { dropdown.classList.add('hidden'); return; }
+      _debounce = setTimeout(() => _fetchSuggestions(val, input, latId, lngId, dropdown, _getToken()), 300);
     });
 
     input.addEventListener('blur', () => {
@@ -126,70 +128,92 @@ const UI = (() => {
     });
   }
 
-  async function _fetchPlaces(query) {
+  async function _fetchSuggestions(query, input, latId, lngId, dropdown, sessionToken) {
+    if (typeof google === 'undefined' || !google.maps?.places) return;
+
     try {
-      const url = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${encodeURIComponent(query)}&types=(cities)&key=${CONFIG.MAPS_API_KEY}&language=ca`;
-      // CORS workaround: usar el servei de Places JS directament
-      return await _fetchPlacesJS(query);
+      // Nova API: AutocompleteSuggestion (Google Maps JS API v3.55+)
+      const { suggestions } = await google.maps.places.AutocompleteSuggestion.fetchAutocompleteSuggestions({
+        input: query,
+        includedPrimaryTypes: ['locality', 'administrative_area_level_2'],
+        sessionToken,
+      });
+
+      _renderDropdown(suggestions, input, latId, lngId, dropdown, sessionToken);
     } catch(e) {
-      return [];
+      // Fallback a l'API antiga si la nova no és disponible
+      _fetchSuggestionsLegacy(query, input, latId, lngId, dropdown);
     }
   }
 
-  function _fetchPlacesJS(query) {
-    return new Promise((resolve) => {
-      if (typeof google === 'undefined' || !google.maps) { resolve([]); return; }
-      const service = new google.maps.places.AutocompleteService();
-      service.getPlacePredictions(
-        { input: query, types: ['(cities)'] },
-        (predictions, status) => {
-          if (status !== google.maps.places.PlacesServiceStatus.OK || !predictions) {
-            resolve([]); return;
-          }
-          resolve(predictions.map(p => ({
-            placeId:     p.place_id,
-            description: p.description,
-            mainText:    p.structured_formatting.main_text,
-          })));
-        }
-      );
+  function _fetchSuggestionsLegacy(query, input, latId, lngId, dropdown) {
+    if (!google.maps?.places?.AutocompleteService) return;
+    const service = new google.maps.places.AutocompleteService();
+    service.getPlacePredictions({ input: query, types: ['(cities)'] }, (predictions, status) => {
+      if (status !== google.maps.places.PlacesServiceStatus.OK || !predictions) {
+        dropdown.classList.add('hidden'); return;
+      }
+      const mapped = predictions.map(p => ({
+        text: p.description,
+        mainText: p.structured_formatting?.main_text || p.description,
+        placeId: p.place_id,
+        isLegacy: true,
+      }));
+      _renderDropdownLegacy(mapped, input, latId, lngId, dropdown);
     });
   }
 
-  function _getPlaceDetails(placeId) {
-    return new Promise((resolve) => {
-      if (typeof google === 'undefined') { resolve(null); return; }
-      const mapDiv = document.createElement('div');
-      const map    = new google.maps.Map(mapDiv);
-      const service= new google.maps.places.PlacesService(map);
-      service.getDetails({ placeId, fields: ['geometry', 'name'] }, (place, status) => {
-        if (status !== google.maps.places.PlacesServiceStatus.OK) { resolve(null); return; }
-        resolve({
-          lat: place.geometry.location.lat(),
-          lng: place.geometry.location.lng(),
-          name: place.name,
-        });
-      });
-    });
-  }
-
-  function _renderDropdown(results, input, latId, lngId, dropdown) {
+  function _renderDropdown(suggestions, input, latId, lngId, dropdown, sessionToken) {
     dropdown.innerHTML = '';
-    if (results.length === 0) { dropdown.classList.add('hidden'); return; }
+    if (!suggestions || suggestions.length === 0) { dropdown.classList.add('hidden'); return; }
     dropdown.classList.remove('hidden');
-    results.forEach(r => {
+
+    suggestions.forEach(s => {
+      const prediction = s.placePrediction;
       const div = document.createElement('div');
       div.className   = 'places-option';
-      div.textContent = r.description;
+      div.textContent = prediction.text.toString();
       div.addEventListener('mousedown', async (e) => {
         e.preventDefault();
-        input.value = r.mainText;
+        input.value = prediction.mainText?.toString() || prediction.text.toString();
         dropdown.classList.add('hidden');
-        // Obtenir coordenades
-        const details = await _getPlaceDetails(r.placeId);
-        if (details) {
-          document.getElementById(latId).value = details.lat;
-          document.getElementById(lngId).value = details.lng;
+        // Obtenir coordenades amb nova API
+        try {
+          const place = prediction.toPlace();
+          await place.fetchFields({ fields: ['location', 'displayName'] });
+          document.getElementById(latId).value = place.location.lat();
+          document.getElementById(lngId).value = place.location.lng();
+        } catch(err) {
+          console.warn('No s'han pogut obtenir coordenades:', err);
+        }
+      });
+      dropdown.appendChild(div);
+    });
+  }
+
+  function _renderDropdownLegacy(items, input, latId, lngId, dropdown) {
+    dropdown.innerHTML = '';
+    if (!items || items.length === 0) { dropdown.classList.add('hidden'); return; }
+    dropdown.classList.remove('hidden');
+    items.forEach(item => {
+      const div = document.createElement('div');
+      div.className   = 'places-option';
+      div.textContent = item.text;
+      div.addEventListener('mousedown', async (e) => {
+        e.preventDefault();
+        input.value = item.mainText;
+        dropdown.classList.add('hidden');
+        // Geocodificar per obtenir coordenades
+        try {
+          const geocoder = new google.maps.Geocoder();
+          geocoder.geocode({ placeId: item.placeId }, (results, status) => {
+            if (status === 'OK' && results[0]) {
+              document.getElementById(latId).value = results[0].geometry.location.lat();
+              document.getElementById(lngId).value = results[0].geometry.location.lng();
+            }
+          });
+        } catch(err) {
+          console.warn('Geocode error:', err);
         }
       });
       dropdown.appendChild(div);
