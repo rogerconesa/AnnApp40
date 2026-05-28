@@ -888,3 +888,34 @@ body {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+/* ============================================
+   PLACES AUTOCOMPLETE
+   ============================================ */
+.places-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+  z-index: 200;
+  overflow: hidden;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.places-option {
+  padding: 0.65rem 0.9rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+  color: var(--text);
+  transition: var(--transition);
+  border-bottom: 1px solid var(--border);
+}
+.places-option:last-child { border-bottom: none; }
+.places-option:hover { background: rgba(233,69,96,0.08); color: var(--accent); }
+
+.form-group { position: relative; }

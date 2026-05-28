@@ -11,6 +11,8 @@ function initApp() {
     () => { UI.showScreen('screen-login'); UI.clearFiles(); UI.resetForm(); }
   );
 
+  UI.initAnys();
+  UI.initCategories();
   UI.initChipsCategoria();
   UI.initChipsPersones();
 
