@@ -1,6 +1,5 @@
 // ============================================
 // ANNAPP40 — UI
-// Interaccions amb el DOM
 // ============================================
 
 const UI = (() => {
@@ -11,7 +10,6 @@ const UI = (() => {
     document.getElementById(id).classList.add('active');
   }
 
-  // ── User info ─────────────────────────────────
   function setUser(profile) {
     document.getElementById('user-avatar').src = profile.picture || '';
     document.getElementById('user-name').textContent = profile.name || profile.email;
@@ -47,22 +45,27 @@ const UI = (() => {
       _files.push(file);
       _renderPreviewItem(file, _files.length - 1);
     }
-
     if (_files.length > 0) {
       document.getElementById('preview-container').classList.remove('hidden');
       document.getElementById('tags-section').classList.remove('hidden');
+      _updatePhotoCount();
     }
+  }
+
+  function _updatePhotoCount() {
+    const counter = document.getElementById('photo-count');
+    if (counter) counter.textContent = `${_files.length} foto${_files.length !== 1 ? 's' : ''} seleccionada${_files.length !== 1 ? 's' : ''}`;
   }
 
   function _renderPreviewItem(file, idx) {
     const grid = document.getElementById('preview-grid');
     const url  = URL.createObjectURL(file);
-
-    const div = document.createElement('div');
-    div.className = 'preview-item';
+    const div  = document.createElement('div');
+    div.className   = 'preview-item';
     div.dataset.idx = idx;
     div.innerHTML = `
       <img src="${url}" alt="${file.name}" />
+      <div class="preview-name">${file.name.length > 16 ? file.name.substring(0,14)+'...' : file.name}</div>
       <button class="remove-btn" data-idx="${idx}" title="Eliminar">✕</button>
     `;
     grid.appendChild(div);
@@ -72,11 +75,12 @@ const UI = (() => {
       const i = parseInt(e.target.dataset.idx);
       _files.splice(i, 1);
       div.remove();
+      _updatePhotoCount();
       if (_files.length === 0) clearFiles();
     });
   }
 
-  // ── Chips de categoria (selecció múltiple) ────
+  // ── Chips categoria ───────────────────────────
   function initChipsCategoria() {
     document.querySelectorAll('#chips-categoria .chip').forEach(chip => {
       chip.addEventListener('click', () => chip.classList.toggle('selected'));
@@ -84,28 +88,33 @@ const UI = (() => {
   }
 
   function getSelectedCategories() {
-    return [...document.querySelectorAll('#chips-categoria .chip.selected')]
-      .map(c => c.dataset.value);
+    return [...document.querySelectorAll('#chips-categoria .chip.selected')].map(c => c.dataset.value);
   }
 
   function resetCategories() {
     document.querySelectorAll('#chips-categoria .chip').forEach(c => c.classList.remove('selected'));
   }
 
-  // ── Chips de persones (dinàmiques) ────────────
+  // ── Chips persones (CORREGIT: manté selecció en afegir) ──
   let _persones = [...CONFIG.PERSONES_INICIALS];
 
   function initChipsPersones() {
-    _renderPersones();
+    _renderPersones([]);
 
     document.getElementById('btn-add-persona').addEventListener('click', () => {
-      const input = document.getElementById('input-nova-persona');
-      const nom = input.value.trim();
+      const input    = document.getElementById('input-nova-persona');
+      const nom      = input.value.trim();
       if (!nom) return;
+
+      // Guardar selecció actual abans de re-renderitzar
+      const selected = getSelectedPersones();
+
       if (!_persones.includes(nom)) {
         _persones.push(nom);
-        _renderPersones();
       }
+      // Re-renderitzar mantenint selecció + seleccionar la nova
+      selected.push(nom);
+      _renderPersones(selected);
       input.value = '';
     });
 
@@ -114,29 +123,28 @@ const UI = (() => {
     });
   }
 
-  function _renderPersones() {
+  function _renderPersones(selectedList = []) {
     const container = document.getElementById('chips-persones');
     container.innerHTML = '';
     _persones.forEach(nom => {
       const btn = document.createElement('button');
-      btn.className = 'chip';
+      btn.className     = 'chip' + (selectedList.includes(nom) ? ' selected' : '');
       btn.dataset.value = nom;
-      btn.textContent = nom;
+      btn.textContent   = nom;
       btn.addEventListener('click', () => btn.classList.toggle('selected'));
       container.appendChild(btn);
     });
   }
 
   function getSelectedPersones() {
-    return [...document.querySelectorAll('#chips-persones .chip.selected')]
-      .map(c => c.dataset.value);
+    return [...document.querySelectorAll('#chips-persones .chip.selected')].map(c => c.dataset.value);
   }
 
   function resetPersones() {
     document.querySelectorAll('#chips-persones .chip').forEach(c => c.classList.remove('selected'));
   }
 
-  // ── Tags form values ──────────────────────────
+  // ── Tags form ─────────────────────────────────
   function getTagValues() {
     return {
       any:       document.getElementById('tag-any').value.trim(),
@@ -178,8 +186,11 @@ const UI = (() => {
   }
 
   // ── Success ───────────────────────────────────
-  function showSuccess() {
-    document.getElementById('success-msg').classList.remove('hidden');
+  function showSuccess(n) {
+    const msg = document.getElementById('success-msg');
+    const txt = document.getElementById('success-text');
+    if (txt) txt.textContent = `✅ ${n} foto${n !== 1 ? 's' : ''} pujada${n !== 1 ? 's' : ''} correctament!`;
+    msg.classList.remove('hidden');
     document.getElementById('tags-section').classList.add('hidden');
     document.getElementById('preview-container').classList.add('hidden');
     document.getElementById('drop-zone').style.display = 'none';

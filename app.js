@@ -1,24 +1,16 @@
 // ============================================
 // ANNAPP40 — APP
-// Punt d'entrada principal
 // ============================================
 
-// ── Esperar que Google GIS estigui carregat ───
-window.addEventListener('load', () => {
-  // Petit delay per assegurar que els scripts de Google estan llests
-  setTimeout(initApp, 300);
-});
+window.addEventListener('load', () => setTimeout(initApp, 300));
 
 function initApp() {
 
-  // ── Inicialitzar Auth ────────────────────────
   Auth.init(
-    // onLogin
     (profile) => {
       UI.setUser(profile);
       UI.showScreen('screen-app');
     },
-    // onLogout
     () => {
       UI.showScreen('screen-login');
       UI.clearFiles();
@@ -26,56 +18,35 @@ function initApp() {
     }
   );
 
-  // ── Inicialitzar UI ──────────────────────────
   UI.initChipsCategoria();
   UI.initChipsPersones();
 
-  // ── Botó login ───────────────────────────────
-  document.getElementById('btn-google-login').addEventListener('click', () => {
-    Auth.login();
-  });
+  document.getElementById('btn-google-login').addEventListener('click', () => Auth.login());
+  document.getElementById('btn-logout').addEventListener('click', () => Auth.logout());
 
-  // ── Botó logout ──────────────────────────────
-  document.getElementById('btn-logout').addEventListener('click', () => {
-    Auth.logout();
-  });
-
-  // ── Drop zone — click ────────────────────────
+  // ── Drop zone ────────────────────────────────
   const dropZone  = document.getElementById('drop-zone');
   const fileInput = document.getElementById('file-input');
 
   dropZone.addEventListener('click', (e) => {
     if (e.target.tagName !== 'LABEL') fileInput.click();
   });
-
-  // ── Drop zone — drag & drop ──────────────────
   dropZone.addEventListener('dragover', (e) => {
     e.preventDefault();
     dropZone.classList.add('dragover');
   });
-
-  dropZone.addEventListener('dragleave', () => {
-    dropZone.classList.remove('dragover');
-  });
-
+  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
   dropZone.addEventListener('drop', (e) => {
     e.preventDefault();
     dropZone.classList.remove('dragover');
-    const files = Array.from(e.dataTransfer.files);
-    UI.addFiles(files);
+    UI.addFiles(Array.from(e.dataTransfer.files));
   });
-
-  // ── File input change ────────────────────────
   fileInput.addEventListener('change', () => {
-    const files = Array.from(fileInput.files);
-    UI.addFiles(files);
-    fileInput.value = ''; // reset per poder tornar a seleccionar els mateixos
+    UI.addFiles(Array.from(fileInput.files));
+    fileInput.value = '';
   });
 
-  // ── Botó pujar ───────────────────────────────
   document.getElementById('btn-upload').addEventListener('click', handleUpload);
-
-  // ── Botó "pujar més" ─────────────────────────
   document.getElementById('btn-more').addEventListener('click', () => {
     UI.clearFiles();
     UI.resetForm();
@@ -83,9 +54,45 @@ function initApp() {
     UI.hideProgress();
   });
 
+  // ── Navegació pestanyes ──────────────────────
+  document.querySelectorAll('.nav-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      const which = tab.dataset.tab;
+      document.querySelectorAll('#screen-app > main, #tab-mevefotos').forEach(p => p.classList.add('hidden'));
+      if (which === 'pujar') {
+        document.querySelector('#screen-app > main:first-of-type').classList.remove('hidden');
+      } else {
+        document.getElementById('tab-mevefotos').classList.remove('hidden');
+        renderMyPhotos();
+      }
+    });
+  });
+
+  document.getElementById('btn-reload') && document.getElementById('btn-reload').addEventListener('click', renderMyPhotos);
+
+  // ── Modal edició ─────────────────────────────
+  document.getElementById('modal-close').addEventListener('click', closeModal);
+  document.getElementById('modal-overlay').addEventListener('click', (e) => {
+    if (e.target === document.getElementById('modal-overlay')) closeModal();
+  });
+  document.querySelectorAll('#modal-chips-categoria .chip').forEach(chip => {
+    chip.addEventListener('click', () => chip.classList.toggle('selected'));
+  });
+  document.getElementById('modal-btn-add-persona').addEventListener('click', () => {
+    const input = document.getElementById('modal-input-persona');
+    const nom   = input.value.trim();
+    if (!nom) return;
+    addModalPersonaChip(nom, true);
+    input.value = '';
+  });
+  document.getElementById('modal-input-persona').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') document.getElementById('modal-btn-add-persona').click();
+  });
 }
 
-// ── Lògica de pujada ─────────────────────────
+// ── Pujada ───────────────────────────────────
 async function handleUpload() {
   const files = UI.getFiles();
   if (files.length === 0) {
@@ -95,7 +102,6 @@ async function handleUpload() {
 
   const tags = UI.getTagValues();
 
-  // Validació camps obligatoris
   if (!tags.any) {
     UI.showToast("L'any és obligatori", 'error');
     return;
@@ -119,20 +125,17 @@ async function handleUpload() {
   const errors = [];
 
   for (let i = 0; i < files.length; i++) {
-    const file = files[i];
+    const file         = files[i];
     const progressText = `Pujant ${i + 1} de ${files.length}: ${file.name}`;
 
     try {
-      // 1. Pujar a Drive
       const driveFile = await Drive.uploadFile(file, (pct) => {
         const total = Math.round((i / files.length) * 100 + pct / files.length);
         UI.showProgress(total, progressText);
       });
 
-      // 2. Fer pública la miniatura
       await Drive.makePublic(driveFile.id);
 
-      // 3. Guardar metadades a Sheets
       const profile = Auth.getProfile();
       await Sheets.appendRow({
         id:         driveFile.id + '_' + Date.now(),
@@ -159,8 +162,7 @@ async function handleUpload() {
   UI.showProgress(100, 'Completat!');
 
   if (errors.length === 0) {
-    UI.showSuccess();
-    UI.showToast(`✅ ${uploaded} foto${uploaded !== 1 ? 's' : ''} pujada${uploaded !== 1 ? 's' : ''} correctament!`, 'success');
+    UI.showSuccess(uploaded);
   } else if (uploaded > 0) {
     UI.showToast(`⚠️ ${uploaded} fotos pujades, ${errors.length} amb error`, '');
   } else {
@@ -168,23 +170,7 @@ async function handleUpload() {
   }
 }
 
-// ── Eliminar foto (Drive + Sheets) ────────────
-async function deletePhoto(fileId) {
-  if (!confirm('Segur que vols eliminar aquesta foto? S\'eliminarà del Drive i dels registres.')) return;
-
-  try {
-    await Drive.deleteFile(fileId);
-    await Sheets.deleteRowByFileId(fileId);
-    UI.showToast('Foto eliminada correctament', 'success');
-    // Recarregar llista si estem a la vista de gestió
-    if (typeof renderMyPhotos === 'function') renderMyPhotos();
-  } catch (err) {
-    console.error('Error eliminant foto:', err);
-    UI.showToast('Error eliminant la foto: ' + err.message, 'error');
-  }
-}
-
-// ── Renderitzar les meves fotos ───────────────
+// ── Les meves fotos ───────────────────────────
 let _currentPhoto = null;
 
 async function renderMyPhotos() {
@@ -199,11 +185,7 @@ async function renderMyPhotos() {
   try {
     const all     = await Sheets.readAll();
     const profile = Auth.getProfile();
-    const myEmail = profile.email;
-    const myName  = profile.name;
-
-    // Filtrar per pujatPer (email o nom)
-    const mine = all.filter(p => p.pujatEmail === myEmail || p.pujatNom === myName);
+    const mine    = all.filter(p => p.pujatEmail === profile.email || p.pujatNom === profile.name);
 
     loading.classList.add('hidden');
 
@@ -212,15 +194,23 @@ async function renderMyPhotos() {
       return;
     }
 
+    // Comptador
+    const counter = document.getElementById('meves-count');
+    if (counter) counter.textContent = `${mine.length} foto${mine.length !== 1 ? 's' : ''}`;
+
     mine.forEach(photo => {
       const div = document.createElement('div');
       div.className = 'meves-item';
       div.innerHTML = `
-        <img src="${photo.url}" alt="${photo.lloc}" loading="lazy" />
+        <div class="meves-img-wrap">
+          <img src="${photo.url}" alt="${photo.lloc}" loading="lazy" />
+          <div class="meves-overlay">✏️ Editar</div>
+        </div>
         <div class="meves-item-info">
           <div class="meves-item-any">${photo.any}</div>
           <div class="meves-item-lloc">${photo.lloc}</div>
           <div class="meves-item-cats">${photo.categoria.join(', ')}</div>
+          <div class="meves-item-persones">${photo.persones.join(' · ')}</div>
         </div>
       `;
       div.addEventListener('click', () => openModal(photo));
@@ -233,53 +223,53 @@ async function renderMyPhotos() {
   }
 }
 
-// ── Modal: obrir ──────────────────────────────
+// ── Modal obrir ───────────────────────────────
 function openModal(photo) {
   _currentPhoto = photo;
 
-  document.getElementById('modal-img').src = photo.url;
-  document.getElementById('modal-any').value  = photo.any;
-  document.getElementById('modal-lloc').value = photo.lloc;
-  document.getElementById('modal-notes').value = photo.notes;
+  document.getElementById('modal-img').src          = photo.url;
+  document.getElementById('modal-any').value        = photo.any;
+  document.getElementById('modal-lloc').value       = photo.lloc;
+  document.getElementById('modal-notes').value      = photo.notes || '';
 
   // Categories
   document.querySelectorAll('#modal-chips-categoria .chip').forEach(chip => {
     chip.classList.toggle('selected', photo.categoria.includes(chip.dataset.value));
   });
 
-  // Persones
+  // Persones — reconstruir chips mantenint selecció
   const container = document.getElementById('modal-chips-persones');
   container.innerHTML = '';
   const totsPersones = [...new Set([...CONFIG.PERSONES_INICIALS, ...photo.persones])];
   totsPersones.forEach(nom => addModalPersonaChip(nom, photo.persones.includes(nom)));
 
-  // Botons
   document.getElementById('modal-btn-save').onclick   = saveModalChanges;
   document.getElementById('modal-btn-delete').onclick = () => deletePhoto(photo.fileId);
 
   document.getElementById('modal-overlay').classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
 }
 
-// ── Modal: tancar ─────────────────────────────
+// ── Modal tancar ──────────────────────────────
 function closeModal() {
   document.getElementById('modal-overlay').classList.add('hidden');
+  document.body.style.overflow = '';
   _currentPhoto = null;
 }
 
-// ── Modal: afegir chip persona ────────────────
+// ── Modal afegir persona (CORREGIT: manté selecció) ──
 function addModalPersonaChip(nom, selected) {
   const container = document.getElementById('modal-chips-persones');
-  // Evitar duplicats
   if ([...container.querySelectorAll('.chip')].some(c => c.dataset.value === nom)) return;
   const btn = document.createElement('button');
-  btn.className = 'chip' + (selected ? ' selected' : '');
+  btn.className     = 'chip' + (selected ? ' selected' : '');
   btn.dataset.value = nom;
-  btn.textContent = nom;
+  btn.textContent   = nom;
   btn.addEventListener('click', () => btn.classList.toggle('selected'));
   container.appendChild(btn);
 }
 
-// ── Modal: guardar canvis ─────────────────────
+// ── Modal guardar ─────────────────────────────
 async function saveModalChanges() {
   if (!_currentPhoto) return;
 
@@ -295,7 +285,7 @@ async function saveModalChanges() {
   }
 
   const btn = document.getElementById('modal-btn-save');
-  btn.disabled = true;
+  btn.disabled    = true;
   btn.textContent = 'Guardant...';
 
   try {
@@ -306,14 +296,14 @@ async function saveModalChanges() {
   } catch (err) {
     UI.showToast('Error guardant: ' + err.message, 'error');
   } finally {
-    btn.disabled = false;
+    btn.disabled    = false;
     btn.textContent = 'Guardar canvis';
   }
 }
 
-// ── Eliminar foto (Drive + Sheets) ────────────
+// ── Eliminar foto ─────────────────────────────
 async function deletePhoto(fileId) {
-  if (!confirm('Segur que vols eliminar aquesta foto? S\'eliminarà del Drive i dels registres.')) return;
+  if (!confirm("Segur que vols eliminar aquesta foto? S'eliminarà del Drive i dels registres.")) return;
 
   try {
     await Drive.deleteFile(fileId);

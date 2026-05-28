@@ -64,7 +64,8 @@
 
         <!-- PREVIEW -->
         <div id="preview-container" class="preview-container hidden">
-          <div id="preview-grid" class="preview-grid"></div>
+          <div id="photo-count" class="photo-count"></div>
+        <div id="preview-grid" class="preview-grid"></div>
         </div>
       </section>
 
@@ -140,7 +141,7 @@
 
       <!-- SUCCESS -->
       <div id="success-msg" class="success-msg hidden">
-        ✅ Fotos pujades correctament!
+        <span id="success-text">✅ Fotos pujades correctament!</span>
         <button id="btn-more" class="btn-link">Pujar més fotos</button>
       </div>
 
@@ -149,7 +150,10 @@
     <!-- TAB: LES MEVES FOTOS -->
     <main id="tab-mevefotos" class="app-main hidden">
       <div class="meves-header">
-        <h2 class="section-title">Les meves fotos</h2>
+        <div>
+          <h2 class="section-title" style="margin-bottom:0">Les meves fotos</h2>
+          <span id="meves-count" style="font-size:0.8rem;color:var(--text-muted)"></span>
+        </div>
         <button id="btn-reload" class="btn-secondary">↻ Actualitzar</button>
       </div>
       <div id="meves-loading" class="meves-loading">Carregant fotos...</div>
