@@ -97,7 +97,7 @@ async function handleUpload() {
 
   // Validació camps obligatoris
   if (!tags.any) {
-    UI.showToast('L'any és obligatori', 'error');
+    UI.showToast("L'any és obligatori", 'error');
     return;
   }
   if (!tags.lloc) {
@@ -135,15 +135,16 @@ async function handleUpload() {
       // 3. Guardar metadades a Sheets
       const profile = Auth.getProfile();
       await Sheets.appendRow({
-        id:        driveFile.id + '_' + Date.now(),
-        fileId:    driveFile.id,
-        url:       Drive.getThumbnailUrl(driveFile.id),
-        any:       tags.any,
-        lloc:      tags.lloc,
-        persones:  tags.persones,
-        categoria: tags.categoria,
-        notes:     tags.notes,
-        pujatPer:  profile ? (profile.name || profile.email) : 'Desconegut',
+        id:         driveFile.id + '_' + Date.now(),
+        fileId:     driveFile.id,
+        url:        Drive.getThumbnailUrl(driveFile.id),
+        any:        tags.any,
+        lloc:       tags.lloc,
+        persones:   tags.persones,
+        categoria:  tags.categoria,
+        notes:      tags.notes,
+        pujatNom:   profile ? (profile.name  || '') : '',
+        pujatEmail: profile ? (profile.email || '') : '',
       });
 
       uploaded++;
@@ -202,7 +203,7 @@ async function renderMyPhotos() {
     const myName  = profile.name;
 
     // Filtrar per pujatPer (email o nom)
-    const mine = all.filter(p => p.pujatPer === myName || p.pujatPer === myEmail);
+    const mine = all.filter(p => p.pujatEmail === myEmail || p.pujatNom === myName);
 
     loading.classList.add('hidden');
 
