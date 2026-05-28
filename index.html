@@ -30,6 +30,62 @@
     </div>
   </div>
 
+  <!-- EDITOR TAGS INDIVIDUAL -->
+  <div id="edit-photo-overlay" class="modal-overlay hidden">
+    <div class="modal-card">
+      <button id="edit-photo-close" class="modal-close">✕</button>
+      <div class="modal-img-wrap" style="max-height:200px;overflow:hidden">
+        <img id="edit-photo-img" src="" alt="" style="width:100%;height:200px;object-fit:cover" />
+      </div>
+      <div class="modal-body">
+        <p id="edit-photo-title" class="edit-photo-title"></p>
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Any</label>
+            <select id="edit-photo-any" class="form-input"><option value="">Selecciona any...</option></select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Lloc</label>
+            <input type="text" id="edit-photo-lloc" class="form-input" placeholder="Cerca un municipi..." autocomplete="off" />
+            <input type="hidden" id="edit-photo-lat" />
+            <input type="hidden" id="edit-photo-lng" />
+            <div id="edit-places-dropdown" class="places-dropdown hidden"></div>
+          </div>
+          <div class="form-group full-width">
+            <label class="form-label">Categoria</label>
+            <div class="tag-chips" id="edit-photo-chips-categoria">
+              <button class="chip" data-value="Festa">🎉 Festa</button>
+              <button class="chip" data-value="Viatges">✈️ Viatges</button>
+              <button class="chip" data-value="Platja">🏖️ Platja</button>
+              <button class="chip" data-value="Dinar">🍽️ Dinar</button>
+              <button class="chip" data-value="Aniversari">🎂 Aniversari</button>
+              <button class="chip" data-value="Sopar">🌙 Sopar</button>
+              <button class="chip" data-value="Nadal">🎄 Nadal</button>
+              <button class="chip" data-value="Esport">⚽ Esport</button>
+              <button class="chip" data-value="Barça">🔵🔴 Barça</button>
+              <button class="chip" data-value="Barbacoa">🔥 Barbacoa</button>
+              <button class="chip" data-value="Karaoke">🎤 Karaoke</button>
+              <button class="chip" data-value="Bar">🍻 Bar</button>
+            </div>
+          </div>
+          <div class="form-group full-width">
+            <label class="form-label">Persones</label>
+            <div class="tag-chips" id="edit-photo-chips-persones"></div>
+            <div class="add-persona">
+              <input type="text" id="edit-photo-input-persona" class="form-input small" placeholder="Afegir persona..." />
+              <button id="edit-photo-btn-add-persona" class="btn-secondary">+ Afegir</button>
+            </div>
+          </div>
+          <div class="form-group full-width">
+            <label class="form-label">Notes</label>
+            <textarea id="edit-photo-notes" class="form-input" rows="2" placeholder="Alguna cosa a destacar..."></textarea>
+          </div>
+        </div>
+        <button id="edit-photo-save" class="btn-upload" style="margin-top:1rem">Guardar tags d'aquesta foto</button>
+      </div>
+    </div>
+  </div>
+
   <!-- MAIN APP -->
   <div id="screen-app" class="screen">
 
@@ -78,31 +134,28 @@
           <!-- Any -->
           <div class="form-group">
             <label class="form-label">Any</label>
-            <input type="number" id="tag-any" class="form-input" placeholder="2024" min="1990" max="2030" />
+            <select id="tag-any" class="form-input">
+              <option value="">Selecciona any...</option>
+            </select>
           </div>
 
           <!-- Lloc -->
           <div class="form-group">
             <label class="form-label">Lloc</label>
-            <input type="text" id="tag-lloc" class="form-input" placeholder="Barcelona, platja, casa..." />
+            <input type="text" id="tag-lloc" class="form-input" placeholder="Cerca un municipi..." autocomplete="off" />
+            <input type="hidden" id="tag-lat" />
+            <input type="hidden" id="tag-lng" />
+            <div id="places-dropdown" class="places-dropdown hidden"></div>
           </div>
 
           <!-- Categoria -->
-          <div class="form-group">
+          <div class="form-group full-width">
             <label class="form-label">Categoria</label>
-            <div class="tag-chips" id="chips-categoria">
-              <button class="chip" data-value="Festa">🎉 Festa</button>
-              <button class="chip" data-value="Viatges">✈️ Viatges</button>
-              <button class="chip" data-value="Platja">🏖️ Platja</button>
-              <button class="chip" data-value="Dinar">🍽️ Dinar</button>
-              <button class="chip" data-value="Aniversari">🎂 Aniversari</button>
-              <button class="chip" data-value="Sopar">🌙 Sopar</button>
-              <button class="chip" data-value="Nadal">🎄 Nadal</button>
-              <button class="chip" data-value="Esport">⚽ Esport</button>
-              <button class="chip" data-value="Barça">🔵🔴 Barça</button>
-              <button class="chip" data-value="Barbacoa">🔥 Barbacoa</button>
-              <button class="chip" data-value="Karaoke">🎤 Karaoke</button>
-              <button class="chip" data-value="Bar">🍻 Bar</button>
+            <div class="tag-chips" id="chips-categoria"></div>
+            <div class="add-persona" style="margin-top:8px">
+              <input type="text" id="input-nova-categoria" class="form-input small" placeholder="Nova categoria..." />
+              <input type="text" id="input-nova-categoria-emoji" class="form-input" style="max-width:60px" placeholder="🏷️" />
+              <button id="btn-add-categoria" class="btn-secondary">+ Afegir</button>
             </div>
           </div>
 
@@ -122,6 +175,11 @@
             <textarea id="tag-notes" class="form-input" rows="2" placeholder="Alguna cosa a destacar..."></textarea>
           </div>
 
+        </div>
+
+        <div class="apply-all-bar">
+          <p class="apply-hint">💡 Omple els camps comuns i clica <strong>Aplicar a totes</strong>, o clica cada foto per ajustar-la individualment.</p>
+          <button id="btn-apply-all" class="btn-secondary">Aplicar a totes les fotos</button>
         </div>
 
         <button id="btn-upload" class="btn-upload">
@@ -180,20 +238,7 @@
             </div>
             <div class="form-group full-width">
               <label class="form-label">Categoria</label>
-              <div class="tag-chips" id="modal-chips-categoria">
-                <button class="chip" data-value="Festa">🎉 Festa</button>
-                <button class="chip" data-value="Viatges">✈️ Viatges</button>
-                <button class="chip" data-value="Platja">🏖️ Platja</button>
-                <button class="chip" data-value="Dinar">🍽️ Dinar</button>
-                <button class="chip" data-value="Aniversari">🎂 Aniversari</button>
-                <button class="chip" data-value="Sopar">🌙 Sopar</button>
-                <button class="chip" data-value="Nadal">🎄 Nadal</button>
-                <button class="chip" data-value="Esport">⚽ Esport</button>
-                <button class="chip" data-value="Barça">🔵🔴 Barça</button>
-                <button class="chip" data-value="Barbacoa">🔥 Barbacoa</button>
-                <button class="chip" data-value="Karaoke">🎤 Karaoke</button>
-                <button class="chip" data-value="Bar">🍻 Bar</button>
-              </div>
+              <div class="tag-chips" id="modal-chips-categoria"></div>
             </div>
             <div class="form-group full-width">
               <label class="form-label">Persones</label>
@@ -219,6 +264,9 @@
 
   <!-- ERROR TOAST -->
   <div id="toast" class="toast hidden"></div>
+
+  <!-- GOOGLE MAPS -->
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBe9Kdwf8J3FzT5YDnINMgu0PdzwaAYpFM&libraries=places&callback=initMapsCallback" async defer></script>
 
   <!-- GOOGLE API -->
   <script src="https://accounts.google.com/gsi/client" async defer></script>

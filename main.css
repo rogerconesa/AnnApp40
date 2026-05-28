@@ -807,3 +807,84 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+/* ============================================
+   EDITOR TAGS INDIVIDUAL
+   ============================================ */
+.apply-all-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background: rgba(233,69,96,0.06);
+  border: 1px dashed rgba(233,69,96,0.25);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 1rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.apply-hint {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  flex: 1;
+  min-width: 200px;
+  line-height: 1.5;
+}
+
+.apply-hint strong { color: var(--text); }
+
+.preview-tag-badge {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  background: rgba(0,0,0,0.7);
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.preview-item.has-custom-tags {
+  border: 2px solid rgba(39,174,96,0.5);
+}
+
+.preview-item:hover {
+  border-color: var(--accent);
+  cursor: pointer;
+}
+
+.preview-item::after {
+  content: '✏️ Editar tags';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0,0,0,0.75);
+  color: #fff;
+  font-size: 0.72rem;
+  padding: 4px 10px;
+  border-radius: 99px;
+  white-space: nowrap;
+  opacity: 0;
+  transition: var(--transition);
+  pointer-events: none;
+}
+
+.preview-item:hover::after { opacity: 1; }
+
+.edit-photo-title {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
