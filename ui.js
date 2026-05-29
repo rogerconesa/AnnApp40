@@ -97,8 +97,22 @@ const UI = (() => {
   // ── Lloc amb geocoding ────────────────────────
   function initLlocInput(inputId, latId, lngId, dropdownId) {
     const input    = document.getElementById(inputId);
-    const dropdown = document.getElementById(dropdownId);
-    if (!input || !dropdown) return;
+    if (!input) return;
+    // Si no hi ha dropdown, crear-ne un dinàmic al costat de l'input
+    let dropdown = dropdownId ? document.getElementById(dropdownId) : null;
+    if (!dropdown) {
+      // Buscar dropdown adjacent ja existent o crear-lo
+      const parent = input.parentNode;
+      dropdown = parent.querySelector('.places-dropdown');
+      if (!dropdown) {
+        dropdown = document.createElement('div');
+        dropdown.className = 'places-dropdown hidden';
+        parent.appendChild(dropdown);
+      }
+    }
+    // Evitar doble bind
+    if (input.dataset.llocBound) return;
+    input.dataset.llocBound = '1';
 
     let _debounce = null;
 
@@ -341,14 +355,15 @@ const UI = (() => {
     // Lloc (only fotos)
     const llocGroup = document.getElementById('edit-photo-lloc-group');
     const catGroup  = document.getElementById('edit-photo-cat-group');
+    const videoMsg = document.getElementById('edit-video-msg');
     if (isVideo) {
       if (llocGroup) llocGroup.style.display = 'none';
       if (catGroup)  catGroup.style.display  = 'none';
-      document.getElementById('edit-video-msg').classList.remove('hidden');
+      if (videoMsg)  videoMsg.classList.remove('hidden');
     } else {
       if (llocGroup) llocGroup.style.display = '';
       if (catGroup)  catGroup.style.display  = '';
-      document.getElementById('edit-video-msg').classList.add('hidden');
+      if (videoMsg)  videoMsg.classList.add('hidden');
       document.getElementById('edit-photo-lloc').value = tags.lloc;
       document.getElementById('edit-photo-lat').value  = tags.lat || '';
       document.getElementById('edit-photo-lng').value  = tags.lng || '';

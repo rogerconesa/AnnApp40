@@ -1,5 +1,5 @@
 // ============================================
-// ANNAPP40 — APP v4
+// ANNAPP40 — APP v5
 // ============================================
 
 window.addEventListener('load', () => setTimeout(initApp, 300));
@@ -12,21 +12,20 @@ function initApp() {
 
   UI.initAnys();
   UI.initCategories();
-  UI.initChipsCategoria();
   UI.initChipsPersones();
-
-  // Inicialitzar lloc (funciona amb o sense Maps JS)
-  UI.initLlocInput('tag-lloc', 'tag-lat', 'tag-lng', 'places-dropdown');
-  UI.initLlocInput('edit-photo-lloc', 'edit-photo-lat', 'edit-photo-lng', 'edit-places-dropdown');
 
   document.getElementById('btn-google-login').addEventListener('click', () => Auth.login());
   document.getElementById('btn-logout').addEventListener('click', () => Auth.logout());
 
-  // ── Drop zone (fitxers locals) ───────────────
+  // ── Drop zone ────────────────────────────────
   const dropZone  = document.getElementById('drop-zone');
   const fileInput = document.getElementById('file-input');
 
-  dropZone.addEventListener('click', (e) => { if (e.target.tagName !== 'LABEL' && !e.target.closest('#btn-drive-picker')) fileInput.click(); });
+  dropZone.addEventListener('click', (e) => {
+    if (e.target.tagName === 'LABEL') return;
+    if (e.target.closest('#btn-drive-picker')) return;
+    fileInput.click();
+  });
   dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
   dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
   dropZone.addEventListener('drop', (e) => {
@@ -38,22 +37,20 @@ function initApp() {
     fileInput.value = '';
   });
 
-  // ── Drive Picker ─────────────────────────────
+  // Drive Picker
   document.getElementById('btn-drive-picker')?.addEventListener('click', async (e) => {
     e.stopPropagation();
     try {
-      await Drive.openPicker((driveFiles) => {
-        UI.addDriveFiles(driveFiles);
-      });
+      await Drive.openPicker((files) => UI.addDriveFiles(files));
     } catch(err) {
-      UI.showToast('Error obrint el Drive Picker: ' + err.message, 'error');
+      UI.showToast('Error obrint Drive: ' + err.message, 'error');
     }
   });
 
-  // ── Botó aplicar a totes ─────────────────────
+  // Botó aplicar a totes
   document.getElementById('btn-apply-all').addEventListener('click', () => {
     UI.applyCommonTagsToAll();
-    UI.showToast('Tags aplicats a tots els elements ✓', 'success');
+    UI.showToast('Tags aplicats a tots els elements', 'success');
   });
 
   document.getElementById('btn-upload').addEventListener('click', handleUpload);
@@ -61,28 +58,24 @@ function initApp() {
     UI.clearFiles(); UI.resetForm(); UI.hideSuccess(); UI.hideProgress();
   });
 
-  // ── Editor tags individual ────────────────────
+  // ── Editor tags individual ─────────────────────
   document.getElementById('edit-photo-close').addEventListener('click', () => UI.closePhotoTagEditor());
   document.getElementById('edit-photo-save').addEventListener('click', () => UI.savePhotoTagEditor());
   document.getElementById('edit-photo-overlay').addEventListener('click', (e) => {
     if (e.target === document.getElementById('edit-photo-overlay')) UI.closePhotoTagEditor();
   });
-  document.querySelectorAll('#edit-photo-chips-categoria .chip').forEach(chip => {
-    chip.addEventListener('click', () => chip.classList.toggle('selected'));
-  });
   document.getElementById('edit-photo-btn-add-persona')?.addEventListener('click', () => {
     const input = document.getElementById('edit-photo-input-persona');
     const nom   = input.value.trim();
     if (!nom) return;
-    const container = document.getElementById('edit-photo-chips-persones');
-    UI.addChipToContainer(container, nom, true);
+    UI.addChipToContainer(document.getElementById('edit-photo-chips-persones'), nom, true);
     input.value = '';
   });
   document.getElementById('edit-photo-input-persona')?.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') document.getElementById('edit-photo-btn-add-persona').click();
+    if (e.key === 'Enter') { e.preventDefault(); document.getElementById('edit-photo-btn-add-persona').click(); }
   });
 
-  // Botó preferida
+  // Botó preferida (editor individual)
   document.getElementById('edit-photo-preferida')?.addEventListener('click', function() {
     this.classList.toggle('active');
     this.textContent = this.classList.contains('active') ? '⭐ Foto preferida' : '☆ Marcar com a preferida';
@@ -94,9 +87,10 @@ function initApp() {
       document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
       tab.classList.add('active');
       const which = tab.dataset.tab;
-      document.querySelectorAll('#screen-app > main, #tab-mevefotos').forEach(p => p.classList.add('hidden'));
+      // Amaguem tots els mains
+      document.querySelectorAll('#screen-app > main').forEach(p => p.classList.add('hidden'));
       if (which === 'pujar') {
-        document.querySelector('#screen-app > main:first-of-type').classList.remove('hidden');
+        document.querySelector('#screen-app > main:not(#tab-mevefotos)').classList.remove('hidden');
       } else {
         document.getElementById('tab-mevefotos').classList.remove('hidden');
         renderMyPhotos();
@@ -106,7 +100,7 @@ function initApp() {
 
   document.getElementById('btn-reload')?.addEventListener('click', renderMyPhotos);
 
-  // ── Modal edició fotos pujades ────────────────
+  // ── Modal edició (fotos pujades) ─────────────
   document.getElementById('modal-close').addEventListener('click', closeModal);
   document.getElementById('modal-overlay').addEventListener('click', (e) => {
     if (e.target === document.getElementById('modal-overlay')) closeModal();
@@ -119,29 +113,33 @@ function initApp() {
     input.value = '';
   });
   document.getElementById('modal-input-persona')?.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') document.getElementById('modal-btn-add-persona').click();
+    if (e.key === 'Enter') { e.preventDefault(); document.getElementById('modal-btn-add-persona').click(); }
+  });
+
+  // Botó preferida al modal d'editar foto pujada
+  document.getElementById('modal-btn-preferida')?.addEventListener('click', function() {
+    this.classList.toggle('active');
+    this.textContent = this.classList.contains('active') ? '⭐ Foto preferida' : '☆ Marcar com a preferida';
   });
 }
 
 // ── Pujada ────────────────────────────────────
 async function handleUpload() {
-  const files     = UI.getFiles();
-  const photoTags = UI.getPhotoTags();
-
+  const files = UI.getFiles();
   if (files.length === 0) { UI.showToast('Selecciona almenys una foto o vídeo', 'error'); return; }
 
-  // Aplicar tags comuns
+  // Aplicar tags comuns als que no en tinguin
   UI.applyCommonTagsToAll();
   const currentTags = UI.getPhotoTags();
 
-  // Validar (vídeos: només persones obligatori)
+  // Validar
   const invalids = currentTags.filter((t, i) => {
     if (files[i].isVideo) return t.persones.length === 0;
     return !t.any || !t.lloc || t.categoria.length === 0 || t.persones.length === 0;
   });
 
   if (invalids.length > 0) {
-    UI.showToast(`${invalids.length} element${invalids.length !== 1 ? 's' : ''} sense tags complets`, 'error');
+    UI.showToast(`${invalids.length} element(s) sense tags complets`, 'error');
     return;
   }
 
@@ -157,28 +155,26 @@ async function handleUpload() {
     try {
       let driveFile;
       if (item.fromDrive) {
-        // Copiar des del Drive de l'usuari
         driveFile = await Drive.copyFromUserDrive(item.driveId, item.name);
       } else {
         driveFile = await Drive.uploadFile(item.file, (pct) => {
           UI.showProgress(Math.round((i / files.length) * 100 + pct / files.length), `Pujant ${i+1}/${files.length}: ${item.name}`);
         });
       }
-
       await Drive.makePublic(driveFile.id);
       const profile = Auth.getProfile();
 
-      // Geocodificar lloc si no té coordenades
+      // Geocodificar si cal
       let lat = tags.lat, lng = tags.lng;
       if (tags.lloc && !lat) {
-        const coords = await Geocoder.geocode(tags.lloc);
-        if (coords) { lat = coords.lat; lng = coords.lng; }
+        const c = await Geocoder.geocode(tags.lloc);
+        if (c) { lat = c.lat; lng = c.lng; }
       }
 
       await Sheets.appendRow({
         id:         driveFile.id + '_' + Date.now(),
         fileId:     driveFile.id,
-        url:        Drive.getThumbnailUrl(driveFile.id),
+        url:        item.isVideo ? '' : Drive.getThumbnailUrl(driveFile.id),
         any:        tags.any,
         lloc:       tags.lloc,
         persones:   tags.persones,
@@ -190,7 +186,6 @@ async function handleUpload() {
         tipus:      item.isVideo ? 'video' : 'foto',
         preferida:  tags.preferida || false,
       });
-
       uploaded++;
     } catch(err) {
       console.error('Error pujant', item.name, err);
@@ -202,7 +197,7 @@ async function handleUpload() {
   UI.showProgress(100, 'Completat!');
 
   if (errors.length === 0) UI.showSuccess(uploaded);
-  else if (uploaded > 0) UI.showToast(`⚠️ ${uploaded} pujats, ${errors.length} amb error`, '');
+  else if (uploaded > 0) UI.showToast(`${uploaded} pujats, ${errors.length} amb error`, '');
   else UI.showToast('Error pujant. Torna-ho a intentar.', 'error');
 }
 
@@ -236,55 +231,66 @@ async function renderMyPhotos() {
       div.innerHTML = `
         <div class="meves-img-wrap">
           ${isVideo
-            ? `<div class="meves-video-thumb">🎬</div><div class="meves-video-name">${photo.pujatNom}</div>`
+            ? `<div class="meves-video-thumb">🎬<div class="meves-video-name">Vídeo</div></div>`
             : `<img src="${photo.url}" alt="${photo.lloc}" loading="lazy" />`
           }
           ${photo.preferida ? '<div class="preferida-badge">⭐</div>' : ''}
           <div class="meves-overlay">✏️ Editar</div>
         </div>
         <div class="meves-item-info">
-          <div class="meves-item-any">${photo.any}${isVideo ? ' 🎬' : ''}</div>
+          <div class="meves-item-any">${photo.any || ''}${isVideo ? ' 🎬' : ''}</div>
           <div class="meves-item-lloc">${photo.lloc || (isVideo ? 'Vídeo de felicitació' : '')}</div>
-          <div class="meves-item-cats">${photo.categoria.join(', ')}</div>
-          <div class="meves-item-persones">${photo.persones.join(' · ')}</div>
+          <div class="meves-item-cats">${(photo.categoria || []).join(', ')}</div>
+          <div class="meves-item-persones">${(photo.persones || []).join(' · ')}</div>
         </div>
       `;
       div.addEventListener('click', () => openModal(photo));
       grid.appendChild(div);
     });
-
   } catch(err) {
     loading.classList.add('hidden');
     UI.showToast('Error: ' + err.message, 'error');
   }
 }
 
-// ── Modal edició ──────────────────────────────
+// ── Modal edició foto pujada ──────────────────
 function openModal(photo) {
   _currentPhoto = photo;
   const isVideo = photo.tipus === 'video';
 
-  document.getElementById('modal-img').src    = isVideo ? '' : photo.url;
-  document.getElementById('modal-img').style.display = isVideo ? 'none' : 'block';
-  const videoThumb = document.getElementById('modal-video-thumb');
-  if (videoThumb) videoThumb.style.display = isVideo ? 'flex' : 'none';
+  // Imatge o vídeo
+  const imgEl   = document.getElementById('modal-img');
+  const vidEl   = document.getElementById('modal-video-thumb');
+  const vidMsg  = document.getElementById('modal-video-msg');
+
+  if (isVideo) {
+    if (imgEl)  imgEl.style.display = 'none';
+    if (vidEl)  vidEl.style.display = 'flex';
+    if (vidMsg) vidMsg.classList.remove('hidden');
+  } else {
+    if (imgEl)  { imgEl.src = photo.url; imgEl.style.display = 'block'; }
+    if (vidEl)  vidEl.style.display = 'none';
+    if (vidMsg) vidMsg.classList.add('hidden');
+  }
 
   // Select any
   const anyEl = document.getElementById('modal-any-sel');
   if (anyEl) {
-    anyEl.innerHTML = '<option value="">Selecciona any...</option>';
+    anyEl.innerHTML = '<option value="">Any...</option>';
     CONFIG.ANYS.forEach(y => {
       const opt = document.createElement('option');
       opt.value = y; opt.textContent = y;
-      opt.selected = y == photo.any;
+      opt.selected = String(y) === String(photo.any);
       anyEl.appendChild(opt);
     });
   }
 
-  document.getElementById('modal-lloc').value  = photo.lloc || '';
-  document.getElementById('modal-lat').value   = photo.lat || '';
-  document.getElementById('modal-lng').value   = photo.lng || '';
-  document.getElementById('modal-notes').value = photo.notes || '';
+  // Camps text
+  const setVal = (id, v) => { const el = document.getElementById(id); if (el) el.value = v || ''; };
+  setVal('modal-lloc',  photo.lloc);
+  setVal('modal-lat',   photo.lat);
+  setVal('modal-lng',   photo.lng);
+  setVal('modal-notes', photo.notes);
 
   // Ocultar lloc/categoria per vídeos
   const llocGroup = document.getElementById('modal-lloc-group');
@@ -292,14 +298,13 @@ function openModal(photo) {
   if (llocGroup) llocGroup.style.display = isVideo ? 'none' : '';
   if (catGroup)  catGroup.style.display  = isVideo ? 'none' : '';
 
-  if (!isVideo) {
-    UI.setSelectedCategories('modal-chips-categoria', photo.categoria);
-  }
+  if (!isVideo) UI.setSelectedCategories('modal-chips-categoria', photo.categoria || []);
 
+  // Persones
   const container = document.getElementById('modal-chips-persones');
   container.innerHTML = '';
-  const tots = [...new Set([...CONFIG.PERSONES_INICIALS, ...photo.persones])];
-  tots.forEach(nom => addModalPersonaChip(nom, photo.persones.includes(nom)));
+  const tots = [...new Set([...CONFIG.PERSONES_INICIALS, ...(photo.persones || [])])];
+  tots.forEach(nom => addModalPersonaChip(nom, (photo.persones || []).includes(nom)));
 
   // Botó preferida
   const prefBtn = document.getElementById('modal-btn-preferida');
@@ -307,14 +312,15 @@ function openModal(photo) {
     prefBtn.style.display = isVideo ? 'none' : 'flex';
     prefBtn.classList.toggle('active', !!photo.preferida);
     prefBtn.textContent = photo.preferida ? '⭐ Foto preferida' : '☆ Marcar com a preferida';
-    prefBtn.onclick = function() {
-      this.classList.toggle('active');
-      this.textContent = this.classList.contains('active') ? '⭐ Foto preferida' : '☆ Marcar com a preferida';
-    };
   }
 
+  // Bind save/delete
   document.getElementById('modal-btn-save').onclick   = saveModalChanges;
   document.getElementById('modal-btn-delete').onclick = () => deletePhoto(photo.fileId);
+
+  // Inicialitzar lloc autocompletes pel modal
+  UI.initLlocInput('modal-lloc', 'modal-lat', 'modal-lng', null);
+
   document.getElementById('modal-overlay').classList.remove('hidden');
   document.body.style.overflow = 'hidden';
 }
@@ -339,8 +345,7 @@ function addModalPersonaChip(nom, selected) {
 async function saveModalChanges() {
   if (!_currentPhoto) return;
   const isVideo   = _currentPhoto.tipus === 'video';
-  const anyEl     = document.getElementById('modal-any-sel');
-  const any       = anyEl ? anyEl.value : '';
+  const any       = document.getElementById('modal-any-sel').value;
   const lloc      = document.getElementById('modal-lloc').value.trim();
   const lat       = document.getElementById('modal-lat').value;
   const lng       = document.getElementById('modal-lng').value;
@@ -366,15 +371,14 @@ async function saveModalChanges() {
     let finalLat = lat ? parseFloat(lat) : null;
     let finalLng = lng ? parseFloat(lng) : null;
     if (lloc && !finalLat) {
-      const coords = await Geocoder.geocode(lloc);
-      if (coords) { finalLat = coords.lat; finalLng = coords.lng; }
+      const c = await Geocoder.geocode(lloc);
+      if (c) { finalLat = c.lat; finalLng = c.lng; }
     }
-
     await Sheets.updateRowByFileId(_currentPhoto.fileId, {
       any, lloc, notes, categoria, persones, preferida,
       lat: finalLat, lng: finalLng,
     });
-    UI.showToast('Canvis guardats!', 'success');
+    UI.showToast('Canvis guardats', 'success');
     closeModal();
     renderMyPhotos();
   } catch(err) {
@@ -385,11 +389,11 @@ async function saveModalChanges() {
 }
 
 async function deletePhoto(fileId) {
-  if (!confirm("Segur que vols eliminar? S'eliminarà del Drive i dels registres.")) return;
+  if (!confirm("Segur que vols eliminar?")) return;
   try {
     await Drive.deleteFile(fileId);
     await Sheets.deleteRowByFileId(fileId);
-    UI.showToast('Eliminat correctament', 'success');
+    UI.showToast('Eliminat', 'success');
     closeModal();
     renderMyPhotos();
   } catch(err) {
