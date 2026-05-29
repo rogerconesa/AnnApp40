@@ -502,6 +502,7 @@ const UI = (() => {
 
 // Callback de Google Maps
 function initMapsCallback() {
+  console.log('Google Maps carregat correctament');
   UI.initPlacesAutocomplete('tag-lloc',        'tag-lat',        'tag-lng',        'places-dropdown');
   UI.initPlacesAutocomplete('edit-photo-lloc', 'edit-photo-lat', 'edit-photo-lng', 'edit-places-dropdown');
 }
