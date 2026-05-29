@@ -947,3 +947,133 @@ body {
 .places-option:hover { background: rgba(233,69,96,0.08); color: var(--accent); }
 
 .form-group { position: relative; }
+
+/* ============================================
+   DRIVE PICKER + VÍDEO + PREFERIDA
+   ============================================ */
+.btn-drive-picker {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  padding: 0.5rem 1rem;
+  margin-top: 0.75rem;
+  transition: var(--transition);
+}
+.btn-drive-picker:hover { border-color: var(--accent2); color: var(--accent2); }
+
+.preview-video { border: 2px solid rgba(245,166,35,0.3); }
+
+.preview-video-thumb {
+  width: 100%;
+  aspect-ratio: 1;
+  background: var(--bg3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+}
+
+.preview-video-label {
+  position: absolute;
+  bottom: 22px;
+  left: 0; right: 0;
+  background: rgba(245,166,35,0.85);
+  color: #000;
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-align: center;
+  padding: 2px;
+}
+
+.modal-video-thumb {
+  width: 100%;
+  height: 200px;
+  background: var(--bg3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  color: var(--text-muted);
+  gap: 0.5rem;
+}
+
+.video-msg {
+  background: rgba(245,166,35,0.08);
+  border: 1px solid rgba(245,166,35,0.2);
+  border-radius: var(--radius-sm);
+  color: var(--accent2);
+  font-size: 0.82rem;
+  padding: 0.65rem 0.9rem;
+  line-height: 1.5;
+}
+
+.btn-preferida {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  padding: 0.6rem 1rem;
+  width: 100%;
+  margin-top: 0.75rem;
+  transition: var(--transition);
+}
+.btn-preferida:hover { border-color: var(--accent2); color: var(--accent2); }
+.btn-preferida.active {
+  background: rgba(245,166,35,0.12);
+  border-color: var(--accent2);
+  color: var(--accent2);
+  font-weight: 500;
+}
+
+.preferida-badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: rgba(0,0,0,0.7);
+  border-radius: 50%;
+  width: 24px; height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+}
+
+.meves-video { border-color: rgba(245,166,35,0.3); }
+
+.meves-video-thumb {
+  width: 100%;
+  aspect-ratio: 1;
+  background: var(--bg3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+}
+
+.meves-video-name {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-align: center;
+  padding: 4px;
+}
+
+.places-option-geocode {
+  color: var(--text-muted);
+  font-style: italic;
+  border-top: 1px solid var(--border);
+}
