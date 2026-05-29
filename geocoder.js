@@ -1,62 +1,49 @@
 // ============================================
-// ANNAPP40 — GEOCODER
-// Converteix nom de lloc a coordenades
+// ANNAPP40 — GEOCODER v2
+// Usa Maps JS SDK (inclòs amb Maps JavaScript API)
 // ============================================
 
 const Geocoder = (() => {
-
-  // Cache per no repetir peticions
   const _cache = {};
 
-  async function geocode(placeName) {
-    if (!placeName || placeName.trim().length < 2) return null;
-    const key = placeName.trim().toLowerCase();
-    if (_cache[key]) return _cache[key];
-
-    try {
-      // Usar Google Geocoding REST API (no depèn de Maps JS)
-      const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(placeName)}&key=${CONFIG.MAPS_API_KEY}&language=ca`;
-      const res = await fetch(url);
-      if (!res.ok) throw new Error('Geocoding error ' + res.status);
-      const data = await res.json();
-
-      if (data.status === 'OK' && data.results.length > 0) {
-        const loc = data.results[0].geometry.location;
-        const result = { lat: loc.lat, lng: loc.lng, formatted: data.results[0].formatted_address };
-        _cache[key] = result;
-        return result;
-      }
-      return null;
-    } catch(err) {
-      console.warn('Geocoding error:', err);
-      return null;
-    }
-  }
-
-  // Autocomplete via Places API REST (funciona sense Maps JS)
-  async function autocomplete(query) {
-    if (!query || query.trim().length < 2) return [];
-    try {
-      const url = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${encodeURIComponent(query)}&types=(cities)&key=${CONFIG.MAPS_API_KEY}&language=ca`;
-      // Nota: CORS no permet cridar directament en producció
-      // Usem el JS SDK si disponible, sinó geocodifiquem directament
-      if (typeof google !== 'undefined' && google.maps?.places) {
-        return await _autocompleteJS(query);
-      }
-      return [];
-    } catch(err) {
-      return [];
-    }
-  }
-
-  function _autocompleteJS(query) {
+  function geocode(placeName) {
     return new Promise((resolve) => {
+      if (!placeName || placeName.trim().length < 2) { resolve(null); return; }
+      const key = placeName.trim().toLowerCase();
+      if (_cache[key]) { resolve(_cache[key]); return; }
+      if (typeof google === 'undefined' || !google.maps?.Geocoder) {
+        resolve(null); return;
+      }
+      const gc = new google.maps.Geocoder();
+      gc.geocode({ address: placeName }, (results, status) => {
+        if (status === 'OK' && results[0]) {
+          const result = {
+            lat: results[0].geometry.location.lat(),
+            lng: results[0].geometry.location.lng(),
+          };
+          _cache[key] = result;
+          resolve(result);
+        } else {
+          resolve(null);
+        }
+      });
+    });
+  }
+
+  function autocomplete(query) {
+    return new Promise((resolve) => {
+      if (!query || query.trim().length < 2) { resolve([]); return; }
+      if (typeof google === 'undefined' || !google.maps?.places?.AutocompleteService) {
+        resolve([]); return;
+      }
       try {
         const service = new google.maps.places.AutocompleteService();
         service.getPlacePredictions(
           { input: query, types: ['(cities)'] },
           (predictions, status) => {
-            if (!predictions || status !== 'OK') { resolve([]); return; }
+            if (!predictions || status !== google.maps.places.PlacesServiceStatus.OK) {
+              resolve([]); return;
+            }
             resolve(predictions.map(p => ({
               placeId:  p.place_id,
               text:     p.description,
@@ -68,11 +55,12 @@ const Geocoder = (() => {
     });
   }
 
-  async function geocodeByPlaceId(placeId) {
+  function geocodeByPlaceId(placeId) {
     return new Promise((resolve) => {
+      if (typeof google === 'undefined' || !google.maps?.Geocoder) { resolve(null); return; }
       try {
-        const geocoderJS = new google.maps.Geocoder();
-        geocoderJS.geocode({ placeId }, (results, status) => {
+        const gc = new google.maps.Geocoder();
+        gc.geocode({ placeId }, (results, status) => {
           if (status === 'OK' && results[0]) {
             resolve({
               lat: results[0].geometry.location.lat(),

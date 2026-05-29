@@ -7,7 +7,8 @@ const CONFIG = {
   DRIVE_FOLDER_ID: '1h0kMl3ZJqlOPfovzU-B1uIwLaRNMfIEZ',
   SPREADSHEET_ID: '1j9z53zI9LDy8lo__A1ZXq8H4MUqQ8kaSR9JYA-WHzIE',
   SHEET_NAME: 'Fotos',
-  MAPS_API_KEY: 'AIzaSyBe9Kdwf8J3FzT5YDnINMgu0PdzwaAYpFM',
+  MAPS_API_KEY: 'AIzaSyDlVEyT4r5s1M4aRjKVOFXHsnhCXRiiQOI',
+  PICKER_API_KEY: 'AIzaSyDlVEyT4r5s1M4aRjKVOFXHsnhCXRiiQOI',
 
   SCOPES: [
     'openid', 'profile', 'email',
