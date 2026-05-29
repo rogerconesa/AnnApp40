@@ -42,6 +42,7 @@
       <div class="header-user">
         <img id="user-avatar" src="" alt="" class="avatar" />
         <span id="user-name"></span>
+        <button id="btn-info" class="btn-info" title="Com funciona?">ⓘ</button>
         <button id="btn-logout" class="btn-logout" title="Sortir">Sortir</button>
       </div>
     </header>
@@ -189,7 +190,9 @@
           </div>
         </div>
 
-        <button id="edit-photo-preferida" class="btn-preferida" type="button">☆ Marcar com a preferida</button>
+        <div class="preferida-wrap">
+          <button id="edit-photo-preferida" class="btn-preferida" type="button">☆ Marcar com a preferida</button>
+        </div>
         <button id="edit-photo-save" class="btn-upload">Guardar</button>
       </div>
     </div>
@@ -242,6 +245,73 @@
           <button id="modal-btn-delete" class="btn-delete">🗑️ Eliminar</button>
           <button id="modal-btn-save" class="btn-upload" style="flex:1;margin-top:0">Guardar canvis</button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- POP-UP DE BENVINGUDA -->
+  <div id="welcome-overlay" class="modal-overlay hidden">
+    <div class="modal-card welcome-card">
+      <div class="modal-handle"></div>
+      <div class="modal-body">
+        <div class="welcome-icon">🎁</div>
+        <h2 class="welcome-title">Benvingut/da a AnnApp40!</h2>
+        <p class="welcome-text">Aquesta app és per crear un regal especial per a l'<strong>Anna</strong> pel seu 40è aniversari.</p>
+
+        <div class="welcome-section">
+          <h3 class="welcome-section-title">📸 Pujar fotos</h3>
+          <p>Comparteix les fotos que tinguis amb l'Anna: viatges, festes, sopars, moments junts... Recorda etiquetar-les amb l'any, lloc, persones i categoria.</p>
+        </div>
+
+        <div class="welcome-section">
+          <h3 class="welcome-section-title">🎬 Pujar vídeos de felicitació</h3>
+          <p>També pots pujar un vídeo curt felicitant l'Anna! Diu-li el que vulguis sobre ella, alguna anècdota, una felicitació... <strong>Màxim 1 minut de durada</strong>.</p>
+        </div>
+
+        <label class="welcome-check">
+          <input type="checkbox" id="welcome-dont-show" />
+          <span>No tornis a mostrar</span>
+        </label>
+
+        <button id="welcome-close" class="btn-upload">Entesos!</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- POP-UP INFO -->
+  <div id="info-overlay" class="modal-overlay hidden">
+    <div class="modal-card welcome-card">
+      <div class="modal-handle"></div>
+      <button id="info-close" class="modal-close">✕</button>
+      <div class="modal-body">
+        <h2 class="welcome-title">Com funciona AnnApp40</h2>
+
+        <div class="welcome-section">
+          <h3 class="welcome-section-title">📤 Pujar fotos i vídeos</h3>
+          <p>Arrossega arxius o clica <strong>"Selecciona fotos o vídeos"</strong>. També pots triar fitxers del teu Google Drive amb el botó <strong>"Des del Drive"</strong>.</p>
+        </div>
+
+        <div class="welcome-section">
+          <h3 class="welcome-section-title">🏷️ Etiquetar</h3>
+          <p>Per cada foto cal: <strong>any, lloc, categoria i persones</strong>. Pots omplir els camps comuns i clicar <strong>"Aplicar a totes"</strong>, o clicar cada foto per ajustar-la individualment.</p>
+        </div>
+
+        <div class="welcome-section">
+          <h3 class="welcome-section-title">⭐ Foto preferida</h3>
+          <p>Marca la foto que més t'agradi com a preferida — apareixerà destacada quan l'Anna consulti l'app.</p>
+        </div>
+
+        <div class="welcome-section">
+          <h3 class="welcome-section-title">🎬 Vídeos de felicitació</h3>
+          <p>Quan pugis un vídeo, només cal indicar qui apareix i un missatge per l'Anna. Que no duri més d'1 minut!</p>
+        </div>
+
+        <div class="welcome-section">
+          <h3 class="welcome-section-title">🖼️ Les meves pujades</h3>
+          <p>A la pestanya <strong>"Les meves"</strong> pots veure totes les fotos/vídeos que has pujat, editar-ne els tags o eliminar-los.</p>
+        </div>
+
+        <button id="info-close-btn" class="btn-upload">D'acord</button>
       </div>
     </div>
   </div>

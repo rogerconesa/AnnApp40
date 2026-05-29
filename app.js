@@ -6,7 +6,14 @@ window.addEventListener('load', () => setTimeout(initApp, 300));
 
 function initApp() {
   Auth.init(
-    (profile) => { UI.setUser(profile); UI.showScreen('screen-app'); },
+    (profile) => {
+      UI.setUser(profile);
+      UI.showScreen('screen-app');
+      const welcomeShown = localStorage.getItem('annapp40_welcome_shown');
+      if (!welcomeShown) {
+        setTimeout(() => document.getElementById('welcome-overlay')?.classList.remove('hidden'), 400);
+      }
+    },
     () => { UI.showScreen('screen-login'); UI.clearFiles(); UI.resetForm(); }
   );
 
@@ -120,6 +127,28 @@ function initApp() {
   document.getElementById('modal-btn-preferida')?.addEventListener('click', function() {
     this.classList.toggle('active');
     this.textContent = this.classList.contains('active') ? '⭐ Foto preferida' : '☆ Marcar com a preferida';
+  });
+
+  document.getElementById('welcome-close')?.addEventListener('click', () => {
+    const dontShow = document.getElementById('welcome-dont-show').checked;
+    if (dontShow) localStorage.setItem('annapp40_welcome_shown', '1');
+    document.getElementById('welcome-overlay').classList.add('hidden');
+  });
+
+  // ── Botó info ────────────────────────────────
+  document.getElementById('btn-info')?.addEventListener('click', () => {
+    document.getElementById('info-overlay').classList.remove('hidden');
+  });
+  document.getElementById('info-close')?.addEventListener('click', () => {
+    document.getElementById('info-overlay').classList.add('hidden');
+  });
+  document.getElementById('info-close-btn')?.addEventListener('click', () => {
+    document.getElementById('info-overlay').classList.add('hidden');
+  });
+  document.getElementById('info-overlay')?.addEventListener('click', (e) => {
+    if (e.target === document.getElementById('info-overlay')) {
+      document.getElementById('info-overlay').classList.add('hidden');
+    }
   });
 }
 
