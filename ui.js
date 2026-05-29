@@ -377,9 +377,10 @@ const UI = (() => {
     all.forEach(nom => _addChip(container, nom, tags.persones.includes(nom)));
 
     // Preferida (només fotos)
-    const prefBtn = document.getElementById('edit-photo-preferida');
+    const prefBtn  = document.getElementById('edit-photo-preferida');
+    const prefWrap = document.querySelector('#edit-photo-overlay .preferida-wrap');
+    if (prefWrap) prefWrap.style.display = isVideo ? 'none' : 'block';
     if (prefBtn) {
-      prefBtn.style.display = isVideo ? 'none' : 'flex';
       prefBtn.classList.toggle('active', !!tags.preferida);
       prefBtn.textContent = tags.preferida ? '⭐ Foto preferida' : '☆ Marcar com a preferida';
     }
