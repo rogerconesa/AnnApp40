@@ -184,7 +184,7 @@ const UI = (() => {
           document.getElementById(latId).value = place.location.lat();
           document.getElementById(lngId).value = place.location.lng();
         } catch(err) {
-          console.warn('No s'han pogut obtenir coordenades:', err);
+          console.warn("No shan pogut obtenir coordenades:", err);
         }
       });
       dropdown.appendChild(div);
