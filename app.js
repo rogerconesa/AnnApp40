@@ -62,7 +62,6 @@ function initApp() {
 
   dropZone.addEventListener('click', (e) => {
     if (e.target.tagName === 'LABEL') return;
-    if (e.target.closest('#btn-drive-picker')) return;
     fileInput.click();
   });
   dropZone.addEventListener('dragover',  (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
@@ -74,12 +73,6 @@ function initApp() {
   fileInput.addEventListener('change', () => {
     UI.addLocalFiles(Array.from(fileInput.files));
     fileInput.value = '';
-  });
-
-  document.getElementById('btn-drive-picker')?.addEventListener('click', async (e) => {
-    e.stopPropagation();
-    try { await Drive.openPicker((files) => UI.addDriveFiles(files)); }
-    catch(err) { UI.showToast('Error Drive: ' + err.message, 'error'); }
   });
 
   // ── Tags ─────────────────────────────────────
