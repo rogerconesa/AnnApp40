@@ -225,7 +225,7 @@ const UI = (() => {
       console.log(`Arxiu: ${file.name} | Tipus: "${file.type}" | isVideo: ${isVideo} | isImage: ${isImage}`);
 
       if (!isImage && !isVideo) {
-        console.warn('Arxiu no reconegut, s'omet:', file.name, file.type);
+        console.warn("Arxiu no reconegut, somet:", file.name, file.type);
         continue;
       }
 
