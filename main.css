@@ -1273,3 +1273,22 @@ textarea.form-input { line-height: 1.5; }
 .chip, .btn-primary, .btn-secondary, .btn-icon, .btn-reload,
 .nav-tab, .btn-google { min-height: 44px; }
 .chip { min-height: 36px; } /* chips smaller but ok */
+
+/* ── Nota de permisos al login ─────────────── */
+.login-permissions-note {
+  background: rgba(10,132,255,0.08);
+  border: 1px solid rgba(10,132,255,0.2);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem 0.9rem;
+  margin: 0.75rem 0 0.25rem;
+  text-align: left;
+}
+.login-permissions-note p {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+.login-permissions-note strong {
+  color: var(--text);
+  font-weight: 600;
+}
