@@ -122,14 +122,14 @@
       </div>
       <div class="form-card-body">
 
-        <div class="form-row">
+        <div class="form-row" id="common-any-group">
           <div class="form-field">
             <label class="form-label" for="tag-any">Any</label>
             <select id="tag-any" class="form-input">
               <option value="">Selecciona any...</option>
             </select>
           </div>
-          <div class="form-field">
+          <div class="form-field" id="common-lloc-group">
             <label class="form-label" for="tag-lloc">Lloc</label>
             <input type="text" id="tag-lloc" class="form-input" placeholder="Cerca un municipi..." autocomplete="off" />
             <input type="hidden" id="tag-lat" />
@@ -138,12 +138,27 @@
           </div>
         </div>
 
-        <div class="form-field">
+        <div class="form-field" id="common-cat-group">
           <label class="form-label">Categoria</label>
           <div class="chips-wrap" id="chips-categoria"></div>
           <div class="add-tag-row">
             <input type="text" id="input-nova-categoria" class="form-input small" placeholder="Nova..." />
             <button id="btn-add-categoria" class="btn-secondary">+ Afegir</button>
+          </div>
+        </div>
+
+        <!-- Categories específiques per vídeos de felicitació -->
+        <div class="form-field hidden" id="common-video-cat-group">
+          <label class="form-label">De quin grup sou?</label>
+          <div class="chips-wrap" id="common-video-chips-categoria">
+            <button class="chip" data-value="Vallvis">Vallvis</button>
+            <button class="chip" data-value="Happy Family">Happy Family</button>
+            <button class="chip" data-value="ICR">ICR</button>
+            <button class="chip" data-value="Wiki-Wiki">Wiki-Wiki</button>
+            <button class="chip" data-value="Menéndez">Menéndez</button>
+            <button class="chip" data-value="DMS">DMS</button>
+            <button class="chip" data-value="Senes">Senes</button>
+            <button class="chip" data-value="Aran">Aran</button>
           </div>
         </div>
 
@@ -165,7 +180,7 @@
           </p>
         </div>
 
-        <div class="preferida-field">
+        <div class="preferida-field" id="common-preferida-group">
           <label class="form-label">Preferida</label>
           <button id="btn-preferida-global" class="btn-preferida" type="button">
             ☆ Marcar totes com a preferides

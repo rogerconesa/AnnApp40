@@ -255,6 +255,34 @@ const UI = (() => {
     document.getElementById('tags-section').classList.remove('hidden');
     document.getElementById('btn-upload').classList.remove('hidden');
     _updatePhotoCount();
+    _adaptCommonForm();
+  }
+
+  function _adaptCommonForm() {
+    const hasPhotos = _files.some(f => !f.isVideo);
+    const hasVideos = _files.some(f => f.isVideo);
+    const onlyVideos = hasVideos && !hasPhotos;
+
+    const toggle = (id, visible) => {
+      const el = document.getElementById(id);
+      if (el) el.classList.toggle('hidden', !visible);
+    };
+
+    // Camps foto: any, lloc, categoria-foto, preferida
+    toggle('common-any-group',       !onlyVideos);
+    toggle('common-lloc-group',      !onlyVideos);
+    toggle('common-cat-group',       !onlyVideos);
+    toggle('common-preferida-group', !onlyVideos);
+    // Camp video: categoria-video
+    toggle('common-video-cat-group',  onlyVideos);
+
+    // Títol adaptat
+    const title = document.querySelector('#tags-section .form-card-title');
+    if (title) {
+      if (onlyVideos) title.textContent = 'Etiquetes del vídeo de felicitació';
+      else if (hasVideos) title.textContent = 'Etiquetes comunes (fotos i vídeos)';
+      else title.textContent = 'Etiquetes comunes';
+    }
   }
 
   function _updatePhotoCount() {
@@ -340,24 +368,30 @@ const UI = (() => {
   }
 
   function applyCommonTagsToAll() {
-    const any       = document.getElementById('tag-any').value;
-    const lloc      = document.getElementById('tag-lloc').value.trim();
-    const lat       = document.getElementById('tag-lat').value;
-    const lng       = document.getElementById('tag-lng').value;
-    const categoria = getSelectedCategories('chips-categoria');
-    const persones  = getSelectedPersones();
-    const notes     = document.getElementById('tag-notes').value.trim();
+    const any          = document.getElementById('tag-any').value;
+    const lloc         = document.getElementById('tag-lloc').value.trim();
+    const lat          = document.getElementById('tag-lat').value;
+    const lng          = document.getElementById('tag-lng').value;
+    const categoria    = getSelectedCategories('chips-categoria');
+    const videoCat     = [...document.querySelectorAll('#common-video-chips-categoria .chip.selected')].map(c => c.dataset.value);
+    const persones     = getSelectedPersones();
+    const notes        = document.getElementById('tag-notes').value.trim();
 
-    _photoTags = _photoTags.map(t => ({
-      ...t,
-      any:       any       || t.any,
-      lloc:      lloc      || t.lloc,
-      lat:       lat       ? parseFloat(lat)  : t.lat,
-      lng:       lng       ? parseFloat(lng)  : t.lng,
-      categoria: !t.isVideo && categoria.length > 0 ? [...categoria] : [...t.categoria],
-      persones:  persones.length > 0 ? [...persones] : [...t.persones],
-      notes:     notes     || t.notes,
-    }));
+    _photoTags = _photoTags.map(t => {
+      const catToApply = t.isVideo
+        ? (videoCat.length > 0 ? [...videoCat] : [...t.categoria])
+        : (categoria.length > 0 ? [...categoria] : [...t.categoria]);
+      return {
+        ...t,
+        any:       !t.isVideo ? (any  || t.any)  : t.any,
+        lloc:      !t.isVideo ? (lloc || t.lloc) : t.lloc,
+        lat:       !t.isVideo && lat  ? parseFloat(lat)  : t.lat,
+        lng:       !t.isVideo && lng  ? parseFloat(lng)  : t.lng,
+        categoria: catToApply,
+        persones:  persones.length > 0 ? [...persones] : [...t.persones],
+        notes:     notes || t.notes,
+      };
+    });
     _files.forEach((_, idx) => { updatePhotoBadge(idx); _updatePreviewStar(idx); });
   }
 

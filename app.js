@@ -120,7 +120,12 @@ function initApp() {
   document.getElementById('edit-photo-input-persona')?.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') { e.preventDefault(); document.getElementById('edit-photo-btn-add-persona').click(); }
   });
-  // Video category chips
+  // Common video category chips (secció comú quan només hi ha vídeos)
+  document.querySelectorAll('#common-video-chips-categoria .chip').forEach(chip => {
+    chip.addEventListener('click', () => chip.classList.toggle('selected'));
+  });
+
+  // Video category chips (editor individual)
   document.querySelectorAll('#edit-video-chips-categoria .chip').forEach(chip => {
     chip.addEventListener('click', () => chip.classList.toggle('selected'));
   });
