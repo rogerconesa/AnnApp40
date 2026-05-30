@@ -257,6 +257,25 @@
         <div class="chips-wrap" id="edit-photo-chips-categoria"></div>
       </div>
 
+      <!-- Categories específiques per a vídeos de felicitació -->
+      <div class="form-field" id="edit-video-cat-group" style="display:none">
+        <label class="form-label">De quin grup sou?</label>
+        <div class="chips-wrap" id="edit-video-chips-categoria">
+          <button class="chip" data-value="Vallvis">Vallvis</button>
+          <button class="chip" data-value="Happy Family">Happy Family</button>
+          <button class="chip" data-value="ICR">ICR</button>
+          <button class="chip" data-value="Wiki-Wiki">Wiki-Wiki</button>
+          <button class="chip" data-value="Menéndez">Menéndez</button>
+          <button class="chip" data-value="DMS">DMS</button>
+          <button class="chip" data-value="Senes">Senes</button>
+          <button class="chip" data-value="Aran">Aran</button>
+        </div>
+        <div class="add-tag-row" style="margin-top:6px">
+          <input type="text" id="edit-video-cat-custom" class="form-input small" placeholder="Altra categoria..." />
+          <button id="edit-video-cat-add" class="btn-secondary">+ Afegir</button>
+        </div>
+      </div>
+
       <div class="form-field">
         <label class="form-label">Persones</label>
         <div class="chips-wrap" id="edit-photo-chips-persones"></div>
@@ -362,7 +381,7 @@
 <!-- ══════════════════════════════════════════
      POP-UP BENVINGUDA
      ══════════════════════════════════════════ -->
-<div id="welcome-overlay" class="modal-overlay hidden">
+<div id="welcome-overlay" class="popup-overlay hidden">
   <div class="popup-sheet">
     <div class="modal-handle"></div>
     <div class="popup-body">
@@ -404,7 +423,7 @@
 <!-- ══════════════════════════════════════════
      POP-UP INFO
      ══════════════════════════════════════════ -->
-<div id="info-overlay" class="modal-overlay hidden">
+<div id="info-overlay" class="popup-overlay hidden">
   <div class="popup-sheet">
     <div class="modal-handle"></div>
     <button id="info-close" class="modal-close-btn">✕</button>

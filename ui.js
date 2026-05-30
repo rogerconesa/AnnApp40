@@ -372,21 +372,24 @@ const UI = (() => {
         : URL.createObjectURL(item.file);
     }
 
-    const videoMsg  = document.getElementById('edit-video-msg');
-    const llocGroup = document.getElementById('edit-photo-lloc-group');
-    const catGroup  = document.getElementById('edit-photo-cat-group');
-    const prefWrap  = document.getElementById('edit-photo-preferida-wrap');
+    const videoMsg    = document.getElementById('edit-video-msg');
+    const llocGroup   = document.getElementById('edit-photo-lloc-group');
+    const catGroup    = document.getElementById('edit-photo-cat-group');
+    const videoCatGrp = document.getElementById('edit-video-cat-group');
+    const prefWrap    = document.getElementById('edit-photo-preferida-wrap');
 
     if (item.isVideo) {
-      if (videoMsg)  videoMsg.classList.remove('hidden');
-      if (llocGroup) llocGroup.style.display = 'none';
-      if (catGroup)  catGroup.style.display  = 'none';
-      if (prefWrap)  prefWrap.style.display  = 'none';
+      if (videoMsg)    videoMsg.classList.remove('hidden');
+      if (llocGroup)   llocGroup.style.display   = 'none';
+      if (catGroup)    catGroup.style.display     = 'none';
+      if (videoCatGrp) videoCatGrp.style.display = 'block';
+      if (prefWrap)    prefWrap.style.display     = 'none';
     } else {
-      if (videoMsg)  videoMsg.classList.add('hidden');
-      if (llocGroup) llocGroup.style.display = '';
-      if (catGroup)  catGroup.style.display  = '';
-      if (prefWrap)  prefWrap.style.display  = '';
+      if (videoMsg)    videoMsg.classList.add('hidden');
+      if (llocGroup)   llocGroup.style.display   = '';
+      if (catGroup)    catGroup.style.display     = '';
+      if (videoCatGrp) videoCatGrp.style.display = 'none';
+      if (prefWrap)    prefWrap.style.display     = '';
     }
 
     document.getElementById('edit-photo-any').value   = tags.any;
@@ -417,6 +420,8 @@ const UI = (() => {
     document.getElementById('edit-photo-overlay').classList.add('hidden');
     document.body.style.overflow = '';
     _editingIdx = -1;
+    // Reset video category chips
+    document.querySelectorAll('#edit-video-chips-categoria .chip').forEach(c => c.classList.remove('selected'));
   }
 
   function savePhotoTagEditor() {
@@ -434,6 +439,9 @@ const UI = (() => {
       lat       = document.getElementById('edit-photo-lat').value ? parseFloat(document.getElementById('edit-photo-lat').value) : null;
       lng       = document.getElementById('edit-photo-lng').value ? parseFloat(document.getElementById('edit-photo-lng').value) : null;
       categoria = getSelectedCategories('edit-photo-chips-categoria');
+    } else {
+      // Vídeo: llegir categories específiques
+      categoria = [...document.querySelectorAll('#edit-video-chips-categoria .chip.selected')].map(c => c.dataset.value);
     }
     _photoTags[_editingIdx] = { any, lloc, lat, lng, categoria, persones, notes, preferida, isVideo };
     updatePhotoBadge(_editingIdx);

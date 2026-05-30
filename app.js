@@ -100,6 +100,29 @@ function initApp() {
   document.getElementById('edit-photo-input-persona')?.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') { e.preventDefault(); document.getElementById('edit-photo-btn-add-persona').click(); }
   });
+  // Video category chips
+  document.querySelectorAll('#edit-video-chips-categoria .chip').forEach(chip => {
+    chip.addEventListener('click', () => chip.classList.toggle('selected'));
+  });
+  document.getElementById('edit-video-cat-add')?.addEventListener('click', () => {
+    const input = document.getElementById('edit-video-cat-custom');
+    const nom   = input.value.trim();
+    if (!nom) return;
+    const container = document.getElementById('edit-video-chips-categoria');
+    if (![...container.querySelectorAll('.chip')].some(c => c.dataset.value === nom)) {
+      const btn = document.createElement('button');
+      btn.className = 'chip selected';
+      btn.dataset.value = nom;
+      btn.textContent = nom;
+      btn.addEventListener('click', () => btn.classList.toggle('selected'));
+      container.appendChild(btn);
+    }
+    input.value = '';
+  });
+  document.getElementById('edit-video-cat-custom')?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); document.getElementById('edit-video-cat-add').click(); }
+  });
+
   document.getElementById('edit-photo-preferida')?.addEventListener('click', function() {
     this.classList.toggle('active');
     this.textContent = this.classList.contains('active') ? '⭐ Foto preferida' : '☆ Marcar com a preferida';
