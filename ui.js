@@ -372,25 +372,18 @@ const UI = (() => {
         : URL.createObjectURL(item.file);
     }
 
-    const videoMsg    = document.getElementById('edit-video-msg');
-    const llocGroup   = document.getElementById('edit-photo-lloc-group');
-    const catGroup    = document.getElementById('edit-photo-cat-group');
-    const videoCatGrp = document.getElementById('edit-video-cat-group');
-    const prefWrap    = document.getElementById('edit-photo-preferida-wrap');
+    // Amagar/mostrar camps segons tipus — reset complet cada cop
+    // Usa classList per compatibilitat amb la classe .hidden (!important)
+    const toggle = (id, visible) => {
+      const el = document.getElementById(id);
+      if (el) el.classList.toggle('hidden', !visible);
+    };
 
-    if (item.isVideo) {
-      if (videoMsg)    videoMsg.classList.remove('hidden');
-      if (llocGroup)   llocGroup.style.display   = 'none';
-      if (catGroup)    catGroup.style.display     = 'none';
-      if (videoCatGrp) videoCatGrp.style.display = 'block';
-      if (prefWrap)    prefWrap.style.display     = 'none';
-    } else {
-      if (videoMsg)    videoMsg.classList.add('hidden');
-      if (llocGroup)   llocGroup.style.display   = '';
-      if (catGroup)    catGroup.style.display     = '';
-      if (videoCatGrp) videoCatGrp.style.display = 'none';
-      if (prefWrap)    prefWrap.style.display     = '';
-    }
+    toggle('edit-video-msg',          item.isVideo);
+    toggle('edit-photo-lloc-group',   !item.isVideo);
+    toggle('edit-photo-cat-group',    !item.isVideo);
+    toggle('edit-video-cat-group',     item.isVideo);
+    toggle('edit-photo-preferida-wrap', !item.isVideo);
 
     document.getElementById('edit-photo-any').value   = tags.any;
     document.getElementById('edit-photo-notes').value = tags.notes;

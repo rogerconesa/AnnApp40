@@ -1017,12 +1017,13 @@ textarea.form-input { line-height: 1.5; }
   background: var(--overlay);
   z-index: 600;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  padding: 1rem;
+  padding: 1.25rem 1rem 2rem;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .modal-sheet {
@@ -1193,12 +1194,10 @@ textarea.form-input { line-height: 1.5; }
   border-radius: 22px;
   width: 100%;
   max-width: 480px;
-  max-height: 85dvh;
-  overflow-y: auto;
-  overscroll-behavior: contain;
   box-shadow: var(--shadow-xl);
   animation: fadeUp 0.3s ease both;
   margin: auto;
+  flex-shrink: 0;
 }
 
 .popup-sheet .modal-handle { display: none; }
