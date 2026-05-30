@@ -113,9 +113,48 @@ function initApp() {
   document.getElementById('edit-photo-input-persona')?.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') { e.preventDefault(); document.getElementById('edit-photo-btn-add-persona').click(); }
   });
-  // Common video category chips (secció comú quan només hi ha vídeos)
+  // Botó descartar tot
+  document.getElementById('btn-discard-all')?.addEventListener('click', () => {
+    UI.clearFiles();
+    UI.resetForm();
+  });
+
+  // Common video category chips
   document.querySelectorAll('#common-video-chips-categoria .chip').forEach(chip => {
     chip.addEventListener('click', () => chip.classList.toggle('selected'));
+  });
+
+  // Botó Altres (comú)
+  document.getElementById('common-video-altres-btn')?.addEventListener('click', function() {
+    const row = document.getElementById('common-video-altres-row');
+    row.style.display = row.style.display === 'none' ? 'flex' : 'none';
+    if (row.style.display === 'flex') document.getElementById('common-video-altres-input').focus();
+  });
+  document.getElementById('common-video-altres-add')?.addEventListener('click', () => {
+    const input = document.getElementById('common-video-altres-input');
+    const nom   = input.value.trim();
+    if (!nom) return;
+    const container = document.getElementById('common-video-chips-categoria');
+    if (![...container.querySelectorAll('.chip')].some(c => c.dataset.value === nom)) {
+      const btn = document.createElement('button');
+      btn.className = 'chip selected';
+      btn.dataset.value = nom;
+      btn.textContent = nom;
+      btn.addEventListener('click', () => btn.classList.toggle('selected'));
+      container.appendChild(btn);
+    }
+    input.value = '';
+    document.getElementById('common-video-altres-row').style.display = 'none';
+  });
+  document.getElementById('common-video-altres-input')?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); document.getElementById('common-video-altres-add').click(); }
+  });
+
+  // Botó Altres (editor individual)
+  document.getElementById('edit-video-altres-btn')?.addEventListener('click', function() {
+    const row = document.getElementById('edit-video-altres-row');
+    row.style.display = row.style.display === 'none' ? 'flex' : 'none';
+    if (row.style.display === 'flex') document.getElementById('edit-video-cat-custom').focus();
   });
 
   // Video category chips (editor individual)

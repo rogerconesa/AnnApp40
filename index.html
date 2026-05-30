@@ -47,6 +47,9 @@
         <p>ℹ️ Google demanarà permís per accedir al <strong>Drive</strong> i als <strong>Fulls de càlcul</strong>. Cal marcar els dos per poder pujar fotos i guardar les etiquetes. Només es demana <strong>una vegada</strong>.</p>
       </div>
 
+      <div class="login-install-note">
+        <p>📱 <strong>Instal·lar l'app:</strong> Android → menú ⋮ → <strong>"Afegir a pantalla d'inici"</strong> · iPhone → botó compartir ↑ → <strong>"Afegir a pantalla d'inici"</strong></p>
+      </div>
       <a href="solicitud.html" class="login-request">No tens accés? Sol·licita'l aquí →</a>
     </div>
   </div>
@@ -112,7 +115,10 @@
 
     <!-- Preview -->
     <div id="preview-container" class="preview-container hidden">
-      <div id="photo-count" class="photo-count"></div>
+      <div class="preview-header">
+        <div id="photo-count" class="photo-count"></div>
+        <button id="btn-discard-all" class="btn-discard-all">✕ Descartar tot</button>
+      </div>
       <div id="preview-grid" class="preview-grid"></div>
     </div>
 
@@ -162,6 +168,11 @@
             <button class="chip" data-value="Senes">Senes</button>
             <button class="chip" data-value="Aran">Aran</button>
           </div>
+          <div class="add-tag-row" id="common-video-altres-row" style="display:none">
+            <input type="text" id="common-video-altres-input" class="form-input small" placeholder="Nom del grup..." />
+            <button id="common-video-altres-add" class="btn-secondary">+ Afegir</button>
+          </div>
+          <button class="chip" id="common-video-altres-btn" style="margin-top:6px">+ Altres</button>
         </div>
 
         <div class="form-field">

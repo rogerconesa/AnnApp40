@@ -1292,3 +1292,48 @@ textarea.form-input { line-height: 1.5; }
   color: var(--text);
   font-weight: 600;
 }
+
+/* ── Install note login ─────────────────────── */
+.login-install-note {
+  background: rgba(34,197,94,0.08);
+  border: 1px solid rgba(34,197,94,0.2);
+  border-radius: var(--radius-sm);
+  padding: 0.7rem 0.9rem;
+  margin: 0.5rem 0 0.25rem;
+  text-align: left;
+}
+.login-install-note p {
+  font-size: 0.76rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+.login-install-note strong { color: var(--text); font-weight: 600; }
+
+/* ── Preview header (count + discard) ─────── */
+.preview-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.6rem;
+}
+
+.btn-discard-all {
+  background: none;
+  border: 1px solid rgba(239,68,68,0.3);
+  border-radius: 99px;
+  color: var(--red);
+  cursor: pointer;
+  font-family: var(--font);
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 4px 12px;
+  transition: var(--transition);
+  white-space: nowrap;
+}
+.btn-discard-all:hover { background: var(--red); color: #fff; border-color: var(--red); }
+
+/* ── Remove btn always visible on mobile ─── */
+@media (hover: none) {
+  .remove-btn { opacity: 1 !important; }
+  .preview-star-btn { opacity: 1 !important; }
+}
