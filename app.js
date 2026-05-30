@@ -27,13 +27,33 @@ function initApp() {
 
   // ── PWA install prompt ────────────────────────
   let _deferredPrompt = null;
+
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     _deferredPrompt = e;
-    // Mostrar banner discret
-    setTimeout(() => {
-      if (_deferredPrompt) _showInstallBanner();
-    }, 3000);
+    // Mostrar botó instal·lar al header
+    const installBtn = document.getElementById('btn-install');
+    if (installBtn) installBtn.classList.remove('hidden');
+    console.log('PWA: beforeinstallprompt capturat');
+  });
+
+  window.addEventListener('appinstalled', () => {
+    _deferredPrompt = null;
+    const installBtn = document.getElementById('btn-install');
+    if (installBtn) installBtn.classList.add('hidden');
+    UI.showToast('App instal·lada correctament! 🎉', 'success');
+  });
+
+  document.getElementById('btn-install')?.addEventListener('click', async () => {
+    if (!_deferredPrompt) {
+      UI.showToast('Usa el menu del navegador per instal·lar', '');
+      return;
+    }
+    _deferredPrompt.prompt();
+    const { outcome } = await _deferredPrompt.userChoice;
+    console.log('PWA install outcome:', outcome);
+    _deferredPrompt = null;
+    document.getElementById('btn-install')?.classList.add('hidden');
   });
 
   // ── Drop zone ─────────────────────────────────

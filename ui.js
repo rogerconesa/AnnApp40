@@ -369,9 +369,13 @@ const UI = (() => {
     const tags = _photoTags[idx];
     const item = _files[idx];
 
+    // Debug: mostrar tipus detectat (visible al toast en mòbil)
+    showToast((item.isVideo ? '🎬 Vídeo' : '📷 Foto') + ' detectat: ' + (item.mimeType || 'desconegut'));
+
     document.getElementById('edit-photo-title').textContent = item.name;
 
-    const imgWrap = document.getElementById('edit-photo-img-wrap');
+    // Preview: foto o vídeo
+    const imgWrap  = document.getElementById('edit-photo-img-wrap');
     const vidThumb = document.getElementById('edit-video-thumb');
     if (item.isVideo) {
       imgWrap.style.display = 'none';
@@ -385,27 +389,33 @@ const UI = (() => {
         : URL.createObjectURL(item.file);
     }
 
-    // Amagar/mostrar camps segons tipus — reset complet cada cop
-    // Usa classList per compatibilitat amb la classe .hidden (!important)
+    // Amagar/mostrar camps — reset COMPLET cada cop
     const toggle = (id, visible) => {
       const el = document.getElementById(id);
-      if (el) el.classList.toggle('hidden', !visible);
+      if (!el) return;
+      el.classList.toggle('hidden', !visible);
     };
 
-    toggle('edit-video-msg',          item.isVideo);
-    toggle('edit-photo-lloc-group',   !item.isVideo);
-    toggle('edit-photo-cat-group',    !item.isVideo);
-    toggle('edit-video-cat-group',     item.isVideo);
+    // Camps FOTO: any, lloc, categoria-foto, preferida
+    toggle('edit-photo-any-group',      !item.isVideo);
+    toggle('edit-photo-lloc-group',     !item.isVideo);
+    toggle('edit-photo-cat-group',      !item.isVideo);
     toggle('edit-photo-preferida-wrap', !item.isVideo);
+    // Camps VIDEO: missatge, categoria-video
+    toggle('edit-video-msg',             item.isVideo);
+    toggle('edit-video-cat-group',       item.isVideo);
+    // Notes: visible sempre
+    // Persones: visible sempre
 
-    document.getElementById('edit-photo-any').value   = tags.any;
-    document.getElementById('edit-photo-notes').value = tags.notes;
+    // Omplir valors
     if (!item.isVideo) {
-      document.getElementById('edit-photo-lloc').value = tags.lloc;
-      document.getElementById('edit-photo-lat').value  = tags.lat || '';
-      document.getElementById('edit-photo-lng').value  = tags.lng || '';
+      document.getElementById('edit-photo-any').value   = tags.any;
+      document.getElementById('edit-photo-lloc').value  = tags.lloc;
+      document.getElementById('edit-photo-lat').value   = tags.lat || '';
+      document.getElementById('edit-photo-lng').value   = tags.lng || '';
       setSelectedCategories('edit-photo-chips-categoria', tags.categoria);
     }
+    document.getElementById('edit-photo-notes').value = tags.notes;
 
     const container = document.getElementById('edit-photo-chips-persones');
     container.innerHTML = '';
