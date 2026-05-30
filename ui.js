@@ -214,9 +214,22 @@ const UI = (() => {
 
   function addLocalFiles(newFiles) {
     for (const file of newFiles) {
-      const isVideo = file.type.startsWith('video/');
-      if (!file.type.startsWith('image/') && !isVideo) continue;
-      _files.push({ file, name: file.name, mimeType: file.type, isVideo, fromDrive: false });
+      // Detecció robusta: per tipus MIME i per extensió (mòbil pot retornar tipus buit)
+      const mimeIsVideo = file.type.startsWith('video/');
+      const extIsVideo  = /\.(mp4|mov|m4v|mpeg|mpg|avi|webm|3gp|3gpp|quicktime|mts|mkv)$/i.test(file.name);
+      const mimeIsImage = file.type.startsWith('image/');
+      const extIsImage  = /\.(jpg|jpeg|png|gif|webp|heic|heif|bmp|tiff|tif)$/i.test(file.name);
+      const isVideo     = mimeIsVideo || (extIsVideo && !mimeIsImage);
+      const isImage     = mimeIsImage || (extIsImage && !mimeIsVideo);
+
+      console.log(`Arxiu: ${file.name} | Tipus: "${file.type}" | isVideo: ${isVideo} | isImage: ${isImage}`);
+
+      if (!isImage && !isVideo) {
+        console.warn('Arxiu no reconegut, s'omet:', file.name, file.type);
+        continue;
+      }
+
+      _files.push({ file, name: file.name, mimeType: file.type || (isVideo ? 'video/mp4' : 'image/jpeg'), isVideo, fromDrive: false });
       _photoTags.push(_emptyTags(isVideo));
       _renderPreviewItem(_files.length - 1);
     }
