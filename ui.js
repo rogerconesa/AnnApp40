@@ -1,10 +1,26 @@
 // ============================================
-// ANNAPP40 — UI v4
+// ANNAPP40 — UI v6
 // ============================================
 
 const UI = (() => {
+  // ── Theme ─────────────────────────────────────
+  function initTheme() {
+    const saved = localStorage.getItem('annapp40_theme') || 'light';
+    setTheme(saved, false);
+    document.getElementById('btn-theme').addEventListener('click', () => {
+      const cur = document.documentElement.dataset.theme || 'light';
+      setTheme(cur === 'light' ? 'dark' : 'light');
+    });
+  }
 
-  // ── Screens ───────────────────────────────────
+  function setTheme(theme, save = true) {
+    document.documentElement.dataset.theme = theme;
+    document.getElementById('btn-theme').textContent = theme === 'dark' ? '☀️' : '🌙';
+    document.getElementById('meta-theme').content = theme === 'dark' ? '#000' : '#0a84ff';
+    if (save) localStorage.setItem('annapp40_theme', theme);
+  }
+
+  // ── Screen ────────────────────────────────────
   function showScreen(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
@@ -46,20 +62,18 @@ const UI = (() => {
   function initCategories() {
     _renderAllCategoryChips();
     document.getElementById('btn-add-categoria')?.addEventListener('click', () => {
-      const nomInput   = document.getElementById('input-nova-categoria');
-      const emojiInput = document.getElementById('input-nova-categoria-emoji');
-      const nom        = nomInput.value.trim();
-      const emoji      = emojiInput.value.trim() || '🏷️';
+      const nomInput = document.getElementById('input-nova-categoria');
+      const nom = nomInput.value.trim();
       if (!nom) return;
       if (!_categories.some(c => c.nom === nom)) {
-        _categories.push({ emoji, nom });
+        _categories.push({ nom });
         _renderAllCategoryChips();
         showToast(`Categoria "${nom}" afegida`, 'success');
       }
-      nomInput.value = ''; emojiInput.value = '';
+      nomInput.value = '';
     });
     document.getElementById('input-nova-categoria')?.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') document.getElementById('btn-add-categoria').click();
+      if (e.key === 'Enter') { e.preventDefault(); document.getElementById('btn-add-categoria').click(); }
     });
   }
 
@@ -71,9 +85,9 @@ const UI = (() => {
       container.innerHTML = '';
       _categories.forEach(cat => {
         const btn = document.createElement('button');
-        btn.className     = 'chip' + (selected.includes(cat.nom) ? ' selected' : '');
+        btn.className = 'chip' + (selected.includes(cat.nom) ? ' selected' : '');
         btn.dataset.value = cat.nom;
-        btn.textContent   = `${cat.emoji} ${cat.nom}`;
+        btn.textContent = cat.nom;
         btn.addEventListener('click', () => btn.classList.toggle('selected'));
         container.appendChild(btn);
       });
@@ -84,24 +98,25 @@ const UI = (() => {
     return [...document.querySelectorAll(`#${containerId} .chip.selected`)].map(c => c.dataset.value);
   }
 
-  function resetCategories(containerId = 'chips-categoria') {
-    document.querySelectorAll(`#${containerId} .chip`).forEach(c => c.classList.remove('selected'));
-  }
-
   function setSelectedCategories(containerId, values) {
     document.querySelectorAll(`#${containerId} .chip`).forEach(c => {
       c.classList.toggle('selected', values.includes(c.dataset.value));
     });
   }
 
-  // ── Lloc amb geocoding ────────────────────────
+  function resetCategories(containerId = 'chips-categoria') {
+    document.querySelectorAll(`#${containerId} .chip`).forEach(c => c.classList.remove('selected'));
+  }
+
+  // ── Lloc input ────────────────────────────────
   function initLlocInput(inputId, latId, lngId, dropdownId) {
-    const input    = document.getElementById(inputId);
+    const input = document.getElementById(inputId);
     if (!input) return;
-    // Si no hi ha dropdown, crear-ne un dinàmic al costat de l'input
+    if (input.dataset.llocBound) return;
+    input.dataset.llocBound = '1';
+
     let dropdown = dropdownId ? document.getElementById(dropdownId) : null;
     if (!dropdown) {
-      // Buscar dropdown adjacent ja existent o crear-lo
       const parent = input.parentNode;
       dropdown = parent.querySelector('.places-dropdown');
       if (!dropdown) {
@@ -110,17 +125,13 @@ const UI = (() => {
         parent.appendChild(dropdown);
       }
     }
-    // Evitar doble bind
-    if (input.dataset.llocBound) return;
-    input.dataset.llocBound = '1';
 
     let _debounce = null;
-
     input.addEventListener('input', () => {
       clearTimeout(_debounce);
       const val = input.value.trim();
-      document.getElementById(latId).value = '';
-      document.getElementById(lngId).value = '';
+      if (latId) document.getElementById(latId).value = '';
+      if (lngId) document.getElementById(lngId).value = '';
       if (val.length < 2) { dropdown.classList.add('hidden'); return; }
       _debounce = setTimeout(() => _fetchAndRender(val, input, latId, lngId, dropdown), 400);
     });
@@ -128,15 +139,13 @@ const UI = (() => {
     input.addEventListener('blur', () => {
       setTimeout(async () => {
         dropdown.classList.add('hidden');
-        // Si no hi ha coordenades però hi ha text, geocodificar automàticament
         const val = input.value.trim();
-        const lat = document.getElementById(latId).value;
+        const lat = latId ? document.getElementById(latId).value : '';
         if (val && !lat) {
-          const coords = await Geocoder.geocode(val);
-          if (coords) {
-            document.getElementById(latId).value = coords.lat;
-            document.getElementById(lngId).value = coords.lng;
-            console.log('Geocodificat:', val, coords);
+          const c = await Geocoder.geocode(val);
+          if (c) {
+            if (latId) document.getElementById(latId).value = c.lat;
+            if (lngId) document.getElementById(lngId).value = c.lng;
           }
         }
       }, 250);
@@ -146,20 +155,18 @@ const UI = (() => {
   async function _fetchAndRender(query, input, latId, lngId, dropdown) {
     const suggestions = await Geocoder.autocomplete(query);
     dropdown.innerHTML = '';
-
     if (suggestions.length === 0) {
-      // Mostrar opció de geocodificar el text directe
       const div = document.createElement('div');
-      div.className   = 'places-option places-option-geocode';
+      div.className = 'places-option places-option-geocode';
       div.textContent = `Usar "${query}"`;
       div.addEventListener('mousedown', async (e) => {
         e.preventDefault();
         input.value = query;
         dropdown.classList.add('hidden');
-        const coords = await Geocoder.geocode(query);
-        if (coords) {
-          document.getElementById(latId).value = coords.lat;
-          document.getElementById(lngId).value = coords.lng;
+        const c = await Geocoder.geocode(query);
+        if (c) {
+          if (latId) document.getElementById(latId).value = c.lat;
+          if (lngId) document.getElementById(lngId).value = c.lng;
           showToast('Ubicació trobada ✓', 'success');
         }
       });
@@ -167,36 +174,28 @@ const UI = (() => {
       dropdown.classList.remove('hidden');
       return;
     }
-
     dropdown.classList.remove('hidden');
     suggestions.forEach(s => {
       const div = document.createElement('div');
-      div.className   = 'places-option';
+      div.className = 'places-option';
       div.textContent = s.text;
       div.addEventListener('mousedown', async (e) => {
         e.preventDefault();
         input.value = s.mainText;
         dropdown.classList.add('hidden');
-        const coords = await Geocoder.geocodeByPlaceId(s.placeId);
-        if (coords) {
-          document.getElementById(latId).value = coords.lat;
-          document.getElementById(lngId).value = coords.lng;
+        const c = await Geocoder.geocodeByPlaceId(s.placeId) || await Geocoder.geocode(s.mainText);
+        if (c) {
+          if (latId) document.getElementById(latId).value = c.lat;
+          if (lngId) document.getElementById(lngId).value = c.lng;
           showToast('Ubicació trobada ✓', 'success');
-        } else {
-          // Fallback: geocodificar per nom
-          const c2 = await Geocoder.geocode(s.mainText);
-          if (c2) {
-            document.getElementById(latId).value = c2.lat;
-            document.getElementById(lngId).value = c2.lng;
-          }
         }
       });
       dropdown.appendChild(div);
     });
   }
 
-  // ── Fitxers i tags ────────────────────────────
-  let _files     = []; // { file?, driveId?, name, mimeType, isVideo, fromDrive }
+  // ── Files & tags ──────────────────────────────
+  let _files = [];
   let _photoTags = [];
 
   function getFiles()     { return _files; }
@@ -207,9 +206,10 @@ const UI = (() => {
     document.getElementById('preview-grid').innerHTML = '';
     document.getElementById('preview-container').classList.add('hidden');
     document.getElementById('tags-section').classList.add('hidden');
+    document.getElementById('btn-upload').classList.add('hidden');
     document.getElementById('drop-zone').style.display = '';
-    const counter = document.getElementById('photo-count');
-    if (counter) counter.textContent = '';
+    const c = document.getElementById('photo-count');
+    if (c) c.textContent = '';
   }
 
   function addLocalFiles(newFiles) {
@@ -237,21 +237,21 @@ const UI = (() => {
   }
 
   function _afterAdd() {
-    if (_files.length > 0) {
-      document.getElementById('preview-container').classList.remove('hidden');
-      document.getElementById('tags-section').classList.remove('hidden');
-      _updatePhotoCount();
-    }
+    if (_files.length === 0) return;
+    document.getElementById('preview-container').classList.remove('hidden');
+    document.getElementById('tags-section').classList.remove('hidden');
+    document.getElementById('btn-upload').classList.remove('hidden');
+    _updatePhotoCount();
   }
 
   function _updatePhotoCount() {
-    const fotos   = _files.filter(f => !f.isVideo).length;
-    const videos  = _files.filter(f => f.isVideo).length;
-    const parts   = [];
+    const fotos  = _files.filter(f => !f.isVideo).length;
+    const videos = _files.filter(f => f.isVideo).length;
+    const parts = [];
     if (fotos)  parts.push(`${fotos} foto${fotos !== 1 ? 's' : ''}`);
     if (videos) parts.push(`${videos} vídeo${videos !== 1 ? 's' : ''}`);
-    const counter = document.getElementById('photo-count');
-    if (counter) counter.textContent = parts.join(' + ') + ' — clica un per ajustar els seus tags';
+    const c = document.getElementById('photo-count');
+    if (c) c.textContent = (parts.join(' + ') || '') + '  ·  Toca un element per ajustar-lo';
   }
 
   function _renderPreviewItem(idx) {
@@ -259,38 +259,61 @@ const UI = (() => {
     const grid = document.getElementById('preview-grid');
     const div  = document.createElement('div');
     div.className = 'preview-item' + (item.isVideo ? ' preview-video' : '');
-    div.dataset.idx = idx;
     div.id = `preview-item-${idx}`;
+    div.dataset.idx = idx;
 
-    let thumbHtml = '';
+    let thumb = '';
     if (item.isVideo) {
-      thumbHtml = `<div class="preview-video-thumb">🎬</div>`;
+      thumb = `<div class="preview-video-thumb">🎬</div>
+               <div class="preview-video-pill">VÍDEO</div>`;
     } else if (item.fromDrive) {
-      thumbHtml = `<img src="https://drive.google.com/thumbnail?id=${item.driveId}&sz=w200" alt="${item.name}" />`;
+      thumb = `<img src="https://drive.google.com/thumbnail?id=${item.driveId}&sz=w200" alt="" />`;
     } else {
-      thumbHtml = `<img src="${URL.createObjectURL(item.file)}" alt="${item.name}" />`;
+      thumb = `<img src="${URL.createObjectURL(item.file)}" alt="" />`;
     }
 
     div.innerHTML = `
-      ${thumbHtml}
-      <div class="preview-name">${item.name.length > 16 ? item.name.substring(0,14)+'...' : item.name}</div>
-      <div class="preview-tag-badge" id="preview-badge-${idx}">⚙️</div>
-      ${item.isVideo ? '<div class="preview-video-label">🎬 Vídeo</div>' : ''}
-      <button class="remove-btn" data-idx="${idx}" title="Eliminar">✕</button>
+      ${thumb}
+      <div class="preview-badge-tl">
+        <div class="preview-badge" id="preview-badge-${idx}">⚙️</div>
+      </div>
+      <button class="preview-star-btn" id="preview-star-${idx}" title="Marcar com a preferida" type="button">☆</button>
+      <button class="remove-btn" data-idx="${idx}" type="button">✕</button>
+      <div class="preview-name">${item.name.length > 18 ? item.name.substring(0,16)+'…' : item.name}</div>
+      <div class="preview-overlay"><span class="preview-hint">Toca per editar tags</span></div>
     `;
     grid.appendChild(div);
 
+    // Editar tags
     div.addEventListener('click', (e) => {
-      if (e.target.classList.contains('remove-btn')) return;
+      if (e.target.classList.contains('remove-btn') || e.target.classList.contains('preview-star-btn')) return;
       openPhotoTagEditor(idx);
     });
+
+    // Estrella preferida (toggle directe sense obrir editor)
+    div.querySelector('.preview-star-btn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      _photoTags[idx].preferida = !_photoTags[idx].preferida;
+      _updatePreviewStar(idx);
+    });
+
+    // Eliminar
     div.querySelector('.remove-btn').addEventListener('click', (e) => {
       e.stopPropagation();
-      const i = parseInt(e.target.dataset.idx);
+      const i = parseInt(e.currentTarget.dataset.idx);
       _files.splice(i, 1); _photoTags.splice(i, 1);
-      div.remove(); _updatePhotoCount();
+      div.remove();
+      _updatePhotoCount();
       if (_files.length === 0) clearFiles();
     });
+  }
+
+  function _updatePreviewStar(idx) {
+    const starBtn = document.getElementById(`preview-star-${idx}`);
+    const item    = document.getElementById(`preview-item-${idx}`);
+    const isP     = _photoTags[idx].preferida;
+    if (starBtn) { starBtn.textContent = isP ? '⭐' : '☆'; starBtn.classList.toggle('active', isP); }
+    if (item)    item.classList.toggle('is-preferida', isP);
   }
 
   function updatePhotoBadge(idx) {
@@ -299,6 +322,7 @@ const UI = (() => {
     if (!badge || !tags) return;
     const hasCustom = tags.any || tags.lloc || tags.categoria.length > 0 || tags.persones.length > 0;
     badge.textContent = hasCustom ? '✅' : '⚙️';
+    badge.classList.toggle('done', !!hasCustom);
     document.getElementById(`preview-item-${idx}`)?.classList.toggle('has-custom-tags', !!hasCustom);
   }
 
@@ -315,81 +339,83 @@ const UI = (() => {
       ...t,
       any:       any       || t.any,
       lloc:      lloc      || t.lloc,
-      lat:       lat       ? parseFloat(lat) : t.lat,
-      lng:       lng       ? parseFloat(lng) : t.lng,
+      lat:       lat       ? parseFloat(lat)  : t.lat,
+      lng:       lng       ? parseFloat(lng)  : t.lng,
       categoria: !t.isVideo && categoria.length > 0 ? [...categoria] : [...t.categoria],
-      persones:  persones.length  > 0 ? [...persones]  : [...t.persones],
+      persones:  persones.length > 0 ? [...persones] : [...t.persones],
       notes:     notes     || t.notes,
     }));
-    _files.forEach((_, idx) => updatePhotoBadge(idx));
+    _files.forEach((_, idx) => { updatePhotoBadge(idx); _updatePreviewStar(idx); });
   }
 
-  // ── Editor tags individual ────────────────────
+  // ── Editor individual ─────────────────────────
   let _editingIdx = -1;
 
   function openPhotoTagEditor(idx) {
-    _editingIdx   = idx;
-    const tags    = _photoTags[idx];
-    const item    = _files[idx];
-    const isVideo = item.isVideo;
+    _editingIdx = idx;
+    const tags = _photoTags[idx];
+    const item = _files[idx];
 
     document.getElementById('edit-photo-title').textContent = item.name;
 
-    // Miniatura
-    if (isVideo) {
-      document.getElementById('edit-photo-img').src   = '';
-      document.getElementById('edit-photo-img').style.display = 'none';
-      document.getElementById('edit-video-thumb').classList.remove('hidden');
+    const imgWrap = document.getElementById('edit-photo-img-wrap');
+    const vidThumb = document.getElementById('edit-video-thumb');
+    if (item.isVideo) {
+      imgWrap.style.display = 'none';
+      vidThumb.classList.remove('hidden');
     } else {
-      document.getElementById('edit-video-thumb').classList.add('hidden');
-      document.getElementById('edit-photo-img').style.display = 'block';
-      document.getElementById('edit-photo-img').src = item.fromDrive
-        ? `https://drive.google.com/thumbnail?id=${item.driveId}&sz=w400`
+      imgWrap.style.display = '';
+      vidThumb.classList.add('hidden');
+      const imgEl = document.getElementById('edit-photo-img');
+      imgEl.src = item.fromDrive
+        ? `https://drive.google.com/thumbnail?id=${item.driveId}&sz=w600`
         : URL.createObjectURL(item.file);
     }
 
-    // Camps comuns
-    document.getElementById('edit-photo-any').value   = tags.any;
-    document.getElementById('edit-photo-notes').value = tags.notes;
-
-    // Lloc (only fotos)
+    const videoMsg  = document.getElementById('edit-video-msg');
     const llocGroup = document.getElementById('edit-photo-lloc-group');
     const catGroup  = document.getElementById('edit-photo-cat-group');
-    const videoMsg = document.getElementById('edit-video-msg');
-    if (isVideo) {
+    const prefWrap  = document.getElementById('edit-photo-preferida-wrap');
+
+    if (item.isVideo) {
+      if (videoMsg)  videoMsg.classList.remove('hidden');
       if (llocGroup) llocGroup.style.display = 'none';
       if (catGroup)  catGroup.style.display  = 'none';
-      if (videoMsg)  videoMsg.classList.remove('hidden');
+      if (prefWrap)  prefWrap.style.display  = 'none';
     } else {
+      if (videoMsg)  videoMsg.classList.add('hidden');
       if (llocGroup) llocGroup.style.display = '';
       if (catGroup)  catGroup.style.display  = '';
-      if (videoMsg)  videoMsg.classList.add('hidden');
+      if (prefWrap)  prefWrap.style.display  = '';
+    }
+
+    document.getElementById('edit-photo-any').value   = tags.any;
+    document.getElementById('edit-photo-notes').value = tags.notes;
+    if (!item.isVideo) {
       document.getElementById('edit-photo-lloc').value = tags.lloc;
       document.getElementById('edit-photo-lat').value  = tags.lat || '';
       document.getElementById('edit-photo-lng').value  = tags.lng || '';
       setSelectedCategories('edit-photo-chips-categoria', tags.categoria);
     }
 
-    // Persones
     const container = document.getElementById('edit-photo-chips-persones');
     container.innerHTML = '';
     const all = [...new Set([...CONFIG.PERSONES_INICIALS, ...tags.persones])];
     all.forEach(nom => _addChip(container, nom, tags.persones.includes(nom)));
 
-    // Preferida (només fotos)
-    const prefBtn  = document.getElementById('edit-photo-preferida');
-    const prefWrap = document.querySelector('#edit-photo-overlay .preferida-wrap');
-    if (prefWrap) prefWrap.style.display = isVideo ? 'none' : 'block';
+    const prefBtn = document.getElementById('edit-photo-preferida');
     if (prefBtn) {
       prefBtn.classList.toggle('active', !!tags.preferida);
       prefBtn.textContent = tags.preferida ? '⭐ Foto preferida' : '☆ Marcar com a preferida';
     }
 
     document.getElementById('edit-photo-overlay').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
   }
 
   function closePhotoTagEditor() {
     document.getElementById('edit-photo-overlay').classList.add('hidden');
+    document.body.style.overflow = '';
     _editingIdx = -1;
   }
 
@@ -399,10 +425,9 @@ const UI = (() => {
     const isVideo = item.isVideo;
     const any     = document.getElementById('edit-photo-any').value;
     const notes   = document.getElementById('edit-photo-notes').value.trim();
-    const persones= [...document.querySelectorAll('#edit-photo-chips-persones .chip.selected')].map(c => c.dataset.value);
-    const prefBtn = document.getElementById('edit-photo-preferida');
+    const persones = [...document.querySelectorAll('#edit-photo-chips-persones .chip.selected')].map(c => c.dataset.value);
+    const prefBtn  = document.getElementById('edit-photo-preferida');
     const preferida = prefBtn ? prefBtn.classList.contains('active') : false;
-
     let lloc = '', lat = null, lng = null, categoria = [];
     if (!isVideo) {
       lloc      = document.getElementById('edit-photo-lloc').value.trim();
@@ -410,9 +435,9 @@ const UI = (() => {
       lng       = document.getElementById('edit-photo-lng').value ? parseFloat(document.getElementById('edit-photo-lng').value) : null;
       categoria = getSelectedCategories('edit-photo-chips-categoria');
     }
-
     _photoTags[_editingIdx] = { any, lloc, lat, lng, categoria, persones, notes, preferida, isVideo };
     updatePhotoBadge(_editingIdx);
+    _updatePreviewStar(_editingIdx);
     closePhotoTagEditor();
     showToast('Tags guardats ✓', 'success');
   }
@@ -427,14 +452,14 @@ const UI = (() => {
     container.appendChild(btn);
   }
 
-  // ── Chips persones ────────────────────────────
+  // ── Persones comunes ──────────────────────────
   let _persones = [...CONFIG.PERSONES_INICIALS];
 
   function initChipsPersones() {
     _renderPersones([]);
     document.getElementById('btn-add-persona').addEventListener('click', () => {
-      const input    = document.getElementById('input-nova-persona');
-      const nom      = input.value.trim();
+      const input = document.getElementById('input-nova-persona');
+      const nom   = input.value.trim();
       if (!nom) return;
       const selected = getSelectedPersones();
       if (!_persones.includes(nom)) _persones.push(nom);
@@ -443,7 +468,7 @@ const UI = (() => {
       input.value = '';
     });
     document.getElementById('input-nova-persona').addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') document.getElementById('btn-add-persona').click();
+      if (e.key === 'Enter') { e.preventDefault(); document.getElementById('btn-add-persona').click(); }
     });
   }
 
@@ -517,6 +542,7 @@ const UI = (() => {
     document.getElementById('success-msg').classList.remove('hidden');
     document.getElementById('tags-section').classList.add('hidden');
     document.getElementById('preview-container').classList.add('hidden');
+    document.getElementById('btn-upload').classList.add('hidden');
     document.getElementById('drop-zone').style.display = 'none';
   }
 
@@ -528,15 +554,15 @@ const UI = (() => {
   function initChipsCategoria() {} // gestionat per initCategories
 
   return {
-    showScreen, setUser, showToast,
+    showScreen, setUser, showToast, initTheme,
     initAnys, initCategories, initChipsCategoria,
-    initLlocInput,
+    initLlocInput, initChipsPersones,
     getFiles, getPhotoTags, clearFiles,
     addLocalFiles, addDriveFiles,
     applyCommonTagsToAll, updatePhotoBadge,
     openPhotoTagEditor, closePhotoTagEditor, savePhotoTagEditor,
     setSelectedCategories, getSelectedCategories, resetCategories,
-    initChipsPersones, getSelectedPersones, resetPersones,
+    getSelectedPersones, resetPersones,
     getTagValues, resetForm,
     showProgress, hideProgress, setUploadLoading,
     showSuccess, hideSuccess,
@@ -544,9 +570,8 @@ const UI = (() => {
   };
 })();
 
-// Callback Maps (si es carrega)
 function initMapsCallback() {
-  console.log('Google Maps carregat');
+  console.log('Maps carregat');
   UI.initLlocInput('tag-lloc',        'tag-lat',        'tag-lng',        'places-dropdown');
   UI.initLlocInput('edit-photo-lloc', 'edit-photo-lat', 'edit-photo-lng', 'edit-places-dropdown');
 }

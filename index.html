@@ -1,347 +1,466 @@
 <!DOCTYPE html>
-<html lang="ca">
+<html lang="ca" data-theme="light">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>AnnApp40 — Afegeix records</title>
+  <title>AnnApp40 — Puja els teus records</title>
   <meta name="description" content="Puja fotos i vídeos per a l'Anna" />
+  <meta name="theme-color" content="#0a84ff" id="meta-theme" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="AnnApp40" />
   <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#000000" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%23000'/><text x='16' y='22' text-anchor='middle' font-size='16' font-weight='700' fill='%230a84ff'>A</text></svg>" />
-  <link rel="stylesheet" href="main.css" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
+  <link rel="icon" href="icon-192.png" />
+  <link rel="stylesheet" href="css/main.css" />
 </head>
 <body>
 
-  <!-- LOGIN -->
-  <div id="screen-login" class="screen active">
-    <div class="login-card">
-      <div class="app-logo">
-        <span class="logo-ann">Ann</span><span class="logo-app">App</span><span class="logo-40">40</span>
+<!-- ══════════════════════════════════════════
+     LOGIN
+     ══════════════════════════════════════════ -->
+<div id="screen-login" class="screen active">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="login-logo-icon">
+        <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+          <text x="50%" y="58%" text-anchor="middle" dominant-baseline="middle"
+            font-family="-apple-system,sans-serif" font-size="22" font-weight="700" fill="white">A</text>
+        </svg>
       </div>
-      <p class="login-subtitle">Records per a l'Anna</p>
-      <button id="btn-google-login" class="btn-google">
-        <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/><path fill="#FF3D00" d="m6.306 14.691 6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/><path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238A11.91 11.91 0 0 1 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/><path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 0 1-4.087 5.571l.003-.002 6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/></svg>
-        Continuar amb Google
-      </button>
-      <p class="login-note">Només membres del grup poden accedir</p>
-      <a href="solicitud.html" class="login-request">No tens accés? Sol·licita'l aquí</a>
+      <div class="login-title">Ann<span class="t-accent">App</span>40</div>
+    </div>
+    <p class="login-sub">Records per a l'Anna · Puja fotos i vídeos</p>
+    <button id="btn-google-login" class="btn-google">
+      <svg width="18" height="18" viewBox="0 0 48 48">
+        <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/>
+        <path fill="#FF3D00" d="m6.306 14.691 6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/>
+        <path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238A11.91 11.91 0 0 1 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/>
+        <path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 0 1-4.087 5.571l.003-.002 6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/>
+      </svg>
+      Continuar amb Google
+    </button>
+    <div class="login-footer">
+      <p class="login-note">Accés restringit als membres del grup</p>
+      <a href="solicitud.html" class="login-request">No tens accés? Sol·licita'l aquí →</a>
     </div>
   </div>
+</div>
 
-  <!-- APP -->
-  <div id="screen-app" class="screen">
+<!-- ══════════════════════════════════════════
+     APP
+     ══════════════════════════════════════════ -->
+<div id="screen-app" class="screen">
 
-    <header class="app-header">
+  <!-- Header -->
+  <header class="app-header">
+    <div class="header-inner">
       <div class="header-logo">
-        <span class="logo-ann">Ann</span><span class="logo-app">App</span><span class="logo-40">40</span>
-      </div>
-      <nav class="header-nav">
-        <button class="nav-tab active" data-tab="pujar">📤 Pujar</button>
-        <button class="nav-tab" data-tab="meves">🖼️ Les meves</button>
-      </nav>
-      <div class="header-user">
-        <img id="user-avatar" src="" alt="" class="avatar" />
-        <span id="user-name"></span>
-        <button id="btn-info" class="btn-info" title="Com funciona?">ⓘ</button>
-        <button id="btn-logout" class="btn-logout" title="Sortir">Sortir</button>
-      </div>
-    </header>
-
-    <!-- TAB: PUJAR -->
-    <main class="app-main">
-      <section class="upload-section">
-        <div id="drop-zone" class="drop-zone">
-          <div class="drop-icon">📷</div>
-          <p class="drop-title">Arrossega fotos o vídeos</p>
-          <p class="drop-sub">o tria d'on vols</p>
-          <label class="btn-primary" for="file-input">Selecciona fotos o vídeos</label>
-          <input type="file" id="file-input" accept="image/*,video/mp4,video/quicktime,video/mpeg,video/webm" multiple hidden />
-          <button id="btn-drive-picker" class="btn-drive-picker" type="button">📂 Des del Drive</button>
+        <div class="header-logo-badge">
+          <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+            <text x="50%" y="58%" text-anchor="middle" dominant-baseline="middle"
+              font-family="-apple-system,sans-serif" font-size="18" font-weight="700" fill="white">A</text>
+          </svg>
         </div>
-
-        <div id="preview-container" class="preview-container hidden">
-          <div id="photo-count" class="photo-count"></div>
-          <div id="preview-grid" class="preview-grid"></div>
+        <span>AnnApp<span class="header-logo-dot">40</span></span>
+      </div>
+      <div class="header-actions">
+        <div class="header-user">
+          <img id="user-avatar" src="" alt="" class="avatar" />
+          <span id="user-name"></span>
         </div>
-      </section>
+        <button id="btn-theme" class="btn-icon" title="Canviar tema">🌙</button>
+        <button id="btn-info"  class="btn-icon" title="Com funciona?">ⓘ</button>
+        <button id="btn-logout" class="btn-icon" title="Sortir">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+            <polyline points="16 17 21 12 16 7"/>
+            <line x1="21" y1="12" x2="9" y2="12"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <nav class="header-nav">
+      <button class="nav-tab active" data-tab="pujar">📤 Pujar</button>
+      <button class="nav-tab"        data-tab="meves">🖼️ Les meves</button>
+    </nav>
+  </header>
 
-      <section id="tags-section" class="tags-section hidden">
-        <h2 class="section-title">Etiqueta els teus records</h2>
+  <!-- TAB: PUJAR -->
+  <main class="app-main" id="tab-pujar">
 
-        <div class="form-grid">
-          <div class="form-group">
-            <label class="form-label">Any</label>
+    <!-- Drop zone -->
+    <div id="drop-zone" class="drop-zone">
+      <div class="drop-icon">📷</div>
+      <p class="drop-title">Fotos i vídeos per a l'Anna</p>
+      <p class="drop-sub">Arrossega aquí o tria d'on vols</p>
+      <div class="drop-buttons">
+        <label class="btn-primary" for="file-input">
+          📁 Selecciona arxius
+        </label>
+        <button id="btn-drive-picker" class="btn-secondary" type="button">
+          ☁️ Des del Drive
+        </button>
+      </div>
+      <input type="file" id="file-input"
+        accept="image/*,video/mp4,video/quicktime,video/mpeg,video/webm"
+        multiple hidden />
+    </div>
+
+    <!-- Preview -->
+    <div id="preview-container" class="preview-container hidden">
+      <div id="photo-count" class="photo-count"></div>
+      <div id="preview-grid" class="preview-grid"></div>
+    </div>
+
+    <!-- Tags form -->
+    <div id="tags-section" class="form-card hidden">
+      <div class="form-card-header">
+        <span class="form-card-title">Etiquetes comunes</span>
+        <button id="btn-apply-all" class="apply-all-btn">Aplicar a totes →</button>
+      </div>
+      <div class="form-card-body">
+
+        <div class="form-row">
+          <div class="form-field">
+            <label class="form-label" for="tag-any">Any</label>
             <select id="tag-any" class="form-input">
               <option value="">Selecciona any...</option>
             </select>
           </div>
-
-          <div class="form-group">
-            <label class="form-label">Lloc</label>
+          <div class="form-field">
+            <label class="form-label" for="tag-lloc">Lloc</label>
             <input type="text" id="tag-lloc" class="form-input" placeholder="Cerca un municipi..." autocomplete="off" />
             <input type="hidden" id="tag-lat" />
             <input type="hidden" id="tag-lng" />
             <div id="places-dropdown" class="places-dropdown hidden"></div>
           </div>
+        </div>
 
-          <div class="form-group full-width">
-            <label class="form-label">Categoria</label>
-            <div class="tag-chips" id="chips-categoria"></div>
-            <div class="add-persona">
-              <input type="text" id="input-nova-categoria" class="form-input small" placeholder="Nova categoria..." />
-              <input type="text" id="input-nova-categoria-emoji" class="form-input" style="max-width:60px" placeholder="🏷️" />
-              <button id="btn-add-categoria" class="btn-secondary">+ Afegir</button>
-            </div>
-          </div>
-
-          <div class="form-group full-width">
-            <label class="form-label">Qui surt?</label>
-            <div class="tag-chips" id="chips-persones"></div>
-            <div class="add-persona">
-              <input type="text" id="input-nova-persona" class="form-input small" placeholder="Afegir persona..." />
-              <button id="btn-add-persona" class="btn-secondary">+ Afegir</button>
-            </div>
-          </div>
-
-          <div class="form-group full-width">
-            <label class="form-label">Notes (opcional)</label>
-            <textarea id="tag-notes" class="form-input" rows="2" placeholder="Alguna cosa a destacar..."></textarea>
+        <div class="form-field">
+          <label class="form-label">Categoria</label>
+          <div class="chips-wrap" id="chips-categoria"></div>
+          <div class="add-tag-row">
+            <input type="text" id="input-nova-categoria" class="form-input small" placeholder="Nova..." />
+            <button id="btn-add-categoria" class="btn-secondary">+ Afegir</button>
           </div>
         </div>
 
-        <div class="apply-all-bar">
-          <p class="apply-hint">💡 Omple els camps i clica <strong>Aplicar a totes</strong>, o clica cada foto/vídeo per ajustar-lo individualment.</p>
-          <button id="btn-apply-all" class="btn-secondary">Aplicar a totes</button>
+        <div class="form-field">
+          <label class="form-label">Qui surt?</label>
+          <div class="chips-wrap" id="chips-persones"></div>
+          <div class="add-tag-row">
+            <input type="text" id="input-nova-persona" class="form-input small" placeholder="Nom..." />
+            <button id="btn-add-persona" class="btn-secondary">+ Afegir</button>
+          </div>
         </div>
 
-        <button id="btn-upload" class="btn-upload">
-          <span id="btn-upload-text">Pujar tot</span>
-          <span id="btn-upload-spinner" class="spinner hidden"></span>
+        <div class="form-field">
+          <label class="form-label" for="tag-notes">Notes</label>
+          <textarea id="tag-notes" class="form-input" rows="3"
+            placeholder="Descriu el moment, on éreu, de quin any és exactament, anècdotes..."></textarea>
+          <p class="notes-hint">
+            💡 <strong>Consell:</strong> Quanta més informació hi posis, millor funcionarà el cercador intel·ligent de la app de l'Anna. Descriu el moment, el context, les persones...
+          </p>
+        </div>
+
+        <div class="preferida-field">
+          <label class="form-label">Preferida</label>
+          <button id="btn-preferida-global" class="btn-preferida" type="button">
+            ☆ Marcar totes com a preferides
+          </button>
+        </div>
+
+        <div class="apply-bar">
+          <p class="apply-bar-text">Omple els camps i clica <strong>Aplicar a totes</strong>, o toca cada foto/vídeo per ajustar-lo individualment.</p>
+          <button id="btn-apply-all-2" class="btn-secondary">Aplicar a totes</button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Upload button -->
+    <button id="btn-upload" class="btn-upload-main hidden">
+      <span id="btn-upload-text">Pujar tot</span>
+      <span id="btn-upload-spinner" class="spinner hidden"></span>
+    </button>
+
+    <!-- Progress -->
+    <div id="progress-container" class="progress-card hidden">
+      <div class="progress-bar-bg"><div id="progress-bar" class="progress-bar"></div></div>
+      <p id="progress-text" class="progress-label">Pujant...</p>
+    </div>
+
+    <!-- Success -->
+    <div id="success-msg" class="success-card hidden">
+      <span id="success-text">✅ Pujat correctament!</span>
+      <button id="btn-more" class="btn-link">Pujar més</button>
+    </div>
+
+  </main>
+
+  <!-- TAB: LES MEVES -->
+  <main class="app-main hidden" id="tab-mevefotos">
+    <div class="meves-header">
+      <div>
+        <div class="meves-title">Les meves pujades</div>
+        <span id="meves-count" class="meves-count"></span>
+      </div>
+      <button id="btn-reload" class="btn-reload">↻ Actualitzar</button>
+    </div>
+    <div id="meves-loading" class="meves-loading">Carregant...</div>
+    <div id="meves-empty" class="meves-empty hidden">Encara no has pujat res. 🙂</div>
+    <div id="meves-grid" class="meves-grid"></div>
+  </main>
+
+</div>
+
+<!-- ══════════════════════════════════════════
+     MODAL: Editor individual (abans de pujar)
+     ══════════════════════════════════════════ -->
+<div id="edit-photo-overlay" class="modal-overlay hidden">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <button id="edit-photo-close" class="modal-close-btn">✕</button>
+
+    <div id="edit-photo-img-wrap" class="modal-photo-preview">
+      <img id="edit-photo-img" src="" alt="" />
+    </div>
+    <div id="edit-video-thumb" class="modal-video-preview hidden">
+      🎬 <small>Vídeo</small>
+    </div>
+
+    <div class="modal-body">
+      <div id="edit-photo-title" class="modal-file-name"></div>
+
+      <div id="edit-video-msg" class="video-notice hidden">
+        <span class="video-notice-icon">🎬</span>
+        <span>Vídeo de felicitació per a l'Anna. Indica qui apareix i escriu un missatge que ella podrà llegir.</span>
+      </div>
+
+      <div class="form-row">
+        <div class="form-field">
+          <label class="form-label">Any</label>
+          <select id="edit-photo-any" class="form-input"><option value="">Any...</option></select>
+        </div>
+        <div class="form-field" id="edit-photo-lloc-group">
+          <label class="form-label">Lloc</label>
+          <input type="text" id="edit-photo-lloc" class="form-input" placeholder="Cerca municipi..." autocomplete="off" />
+          <input type="hidden" id="edit-photo-lat" />
+          <input type="hidden" id="edit-photo-lng" />
+          <div id="edit-places-dropdown" class="places-dropdown hidden"></div>
+        </div>
+      </div>
+
+      <div class="form-field" id="edit-photo-cat-group">
+        <label class="form-label">Categoria</label>
+        <div class="chips-wrap" id="edit-photo-chips-categoria"></div>
+      </div>
+
+      <div class="form-field">
+        <label class="form-label">Persones</label>
+        <div class="chips-wrap" id="edit-photo-chips-persones"></div>
+        <div class="add-tag-row">
+          <input type="text" id="edit-photo-input-persona" class="form-input small" placeholder="Afegir persona..." />
+          <button id="edit-photo-btn-add-persona" class="btn-secondary">+ Afegir</button>
+        </div>
+      </div>
+
+      <div class="form-field">
+        <label class="form-label">Notes / Missatge per a l'Anna</label>
+        <textarea id="edit-photo-notes" class="form-input" rows="3"
+          placeholder="Descriu el moment, anècdotes, el context..."></textarea>
+        <p class="notes-hint">
+          💡 Quanta més informació, millor funcionarà la cerca intel·ligent per a l'Anna.
+        </p>
+      </div>
+
+      <div class="preferida-field" id="edit-photo-preferida-wrap">
+        <label class="form-label">Destacar aquesta foto</label>
+        <button id="edit-photo-preferida" class="btn-preferida" type="button">
+          ☆ Marcar com a preferida
         </button>
-      </section>
-
-      <div id="progress-container" class="progress-container hidden">
-        <div class="progress-bar-wrap"><div id="progress-bar" class="progress-bar"></div></div>
-        <p id="progress-text" class="progress-text">Pujant...</p>
       </div>
 
-      <div id="success-msg" class="success-msg hidden">
-        <span id="success-text">✅ Pujades correctament!</span>
-        <button id="btn-more" class="btn-link">Pujar més</button>
-      </div>
-    </main>
-
-    <!-- TAB: LES MEVES -->
-    <main id="tab-mevefotos" class="app-main hidden">
-      <div class="meves-header">
-        <div>
-          <h2 class="section-title" style="margin-bottom:2px">Les meves pujades</h2>
-          <span id="meves-count" style="font-size:0.78rem;color:var(--text-muted)"></span>
-        </div>
-        <button id="btn-reload" class="btn-secondary">↻ Actualitzar</button>
-      </div>
-      <div id="meves-loading" class="meves-loading">Carregant...</div>
-      <div id="meves-empty" class="meves-empty hidden">Encara no has pujat res.</div>
-      <div id="meves-grid" class="meves-grid"></div>
-    </main>
+      <button id="edit-photo-save" class="btn-upload-main">Guardar</button>
+    </div>
   </div>
+</div>
 
-  <!-- MODAL: editor individual abans de pujar -->
-  <div id="edit-photo-overlay" class="modal-overlay hidden">
-    <div class="modal-card">
-      <div class="modal-handle"></div>
-      <button id="edit-photo-close" class="modal-close">✕</button>
-      <div class="modal-img-wrap">
-        <img id="edit-photo-img" src="" alt="" />
-        <div id="edit-video-thumb" class="modal-video-thumb hidden">🎬<small>Vídeo</small></div>
+<!-- ══════════════════════════════════════════
+     MODAL: Editor de fotos pujades
+     ══════════════════════════════════════════ -->
+<div id="modal-overlay" class="modal-overlay hidden">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <button id="modal-close" class="modal-close-btn">✕</button>
+
+    <div class="modal-photo-preview">
+      <img id="modal-img" src="" alt="" />
+      <div id="modal-video-thumb" class="modal-video-preview" style="display:none">
+        🎬 <small>Vídeo</small>
       </div>
-      <div class="modal-body">
-        <p id="edit-photo-title" class="edit-photo-title"></p>
+    </div>
 
-        <div id="edit-video-msg" class="video-msg hidden" style="margin-bottom:1rem">🎬 Vídeo de felicitació — indica només qui apareix i un missatge per l'Anna.</div>
+    <div class="modal-body">
+      <div id="modal-video-msg" class="video-notice hidden">
+        <span class="video-notice-icon">🎬</span>
+        <span>Vídeo de felicitació per a l'Anna.</span>
+      </div>
 
-        <div class="form-grid">
-          <div class="form-group">
-            <label class="form-label">Any</label>
-            <select id="edit-photo-any" class="form-input"><option value="">Any...</option></select>
-          </div>
-          <div class="form-group" id="edit-photo-lloc-group">
-            <label class="form-label">Lloc</label>
-            <input type="text" id="edit-photo-lloc" class="form-input" placeholder="Cerca municipi..." autocomplete="off" />
-            <input type="hidden" id="edit-photo-lat" />
-            <input type="hidden" id="edit-photo-lng" />
-            <div id="edit-places-dropdown" class="places-dropdown hidden"></div>
-          </div>
-          <div class="form-group full-width" id="edit-photo-cat-group">
-            <label class="form-label">Categoria</label>
-            <div class="tag-chips" id="edit-photo-chips-categoria"></div>
-          </div>
-          <div class="form-group full-width">
-            <label class="form-label">Persones</label>
-            <div class="tag-chips" id="edit-photo-chips-persones"></div>
-            <div class="add-persona">
-              <input type="text" id="edit-photo-input-persona" class="form-input small" placeholder="Afegir persona..." />
-              <button id="edit-photo-btn-add-persona" class="btn-secondary">+ Afegir</button>
-            </div>
-          </div>
-          <div class="form-group full-width">
-            <label class="form-label">Notes / missatge per l'Anna</label>
-            <textarea id="edit-photo-notes" class="form-input" rows="3" placeholder="Alguna cosa a destacar..."></textarea>
-          </div>
+      <div class="form-row">
+        <div class="form-field">
+          <label class="form-label">Any</label>
+          <select id="modal-any-sel" class="form-input"><option value="">Any...</option></select>
         </div>
-
-        <div class="preferida-wrap">
-          <button id="edit-photo-preferida" class="btn-preferida" type="button">☆ Marcar com a preferida</button>
+        <div class="form-field" id="modal-lloc-group">
+          <label class="form-label">Lloc</label>
+          <input type="text" id="modal-lloc" class="form-input" autocomplete="off" />
+          <input type="hidden" id="modal-lat" />
+          <input type="hidden" id="modal-lng" />
         </div>
-        <button id="edit-photo-save" class="btn-upload">Guardar</button>
+      </div>
+
+      <div class="form-field" id="modal-cat-group">
+        <label class="form-label">Categoria</label>
+        <div class="chips-wrap" id="modal-chips-categoria"></div>
+      </div>
+
+      <div class="form-field">
+        <label class="form-label">Persones</label>
+        <div class="chips-wrap" id="modal-chips-persones"></div>
+        <div class="add-tag-row">
+          <input type="text" id="modal-input-persona" class="form-input small" placeholder="Afegir persona..." />
+          <button id="modal-btn-add-persona" class="btn-secondary">+ Afegir</button>
+        </div>
+      </div>
+
+      <div class="form-field">
+        <label class="form-label">Notes</label>
+        <textarea id="modal-notes" class="form-input" rows="3"
+          placeholder="Descriu el moment, anècdotes..."></textarea>
+        <p class="notes-hint">
+          💡 Quanta més informació, millor funcionarà la cerca intel·ligent per a l'Anna.
+        </p>
+      </div>
+
+      <div class="preferida-field" id="modal-preferida-wrap">
+        <label class="form-label">Destacar</label>
+        <button id="modal-btn-preferida" class="btn-preferida" type="button">
+          ☆ Marcar com a preferida
+        </button>
+      </div>
+
+      <div class="modal-actions">
+        <button id="modal-btn-delete" class="btn-danger">🗑️ Eliminar</button>
+        <button id="modal-btn-save" class="btn-upload-main">Guardar canvis</button>
       </div>
     </div>
   </div>
+</div>
 
-  <!-- MODAL: editor de fotos ja pujades -->
-  <div id="modal-overlay" class="modal-overlay hidden">
-    <div class="modal-card">
-      <div class="modal-handle"></div>
-      <button id="modal-close" class="modal-close">✕</button>
-      <div class="modal-img-wrap">
-        <img id="modal-img" src="" alt="" />
-        <div id="modal-video-thumb" class="modal-video-thumb" style="display:none">🎬<small>Vídeo</small></div>
+<!-- ══════════════════════════════════════════
+     POP-UP BENVINGUDA
+     ══════════════════════════════════════════ -->
+<div id="welcome-overlay" class="modal-overlay hidden">
+  <div class="popup-sheet">
+    <div class="modal-handle"></div>
+    <div class="popup-body">
+      <div class="popup-icon">🎁</div>
+      <h2 class="popup-title">Benvingut/da a AnnApp40!</h2>
+      <p class="popup-intro">Aquesta app és per crear un regal especial per a l'<strong>Anna</strong> pel seu 40è aniversari.</p>
+
+      <div class="popup-section">
+        <div class="popup-section-title">📸 Puja fotos</div>
+        <p>Comparteix fotos amb l'Anna: viatges, festes, sopars, moments... Etiqueta-les amb any, lloc i persones perquè ella les pugui trobar fàcilment.</p>
       </div>
-      <div class="modal-body">
-        <div id="modal-video-msg" class="video-msg hidden" style="margin-bottom:1rem">🎬 Vídeo de felicitació</div>
 
-        <div class="form-grid">
-          <div class="form-group">
-            <label class="form-label">Any</label>
-            <select id="modal-any-sel" class="form-input"><option value="">Any...</option></select>
-          </div>
-          <div class="form-group" id="modal-lloc-group">
-            <label class="form-label">Lloc</label>
-            <input type="text" id="modal-lloc" class="form-input" autocomplete="off" />
-            <input type="hidden" id="modal-lat" />
-            <input type="hidden" id="modal-lng" />
-          </div>
-          <div class="form-group full-width" id="modal-cat-group">
-            <label class="form-label">Categoria</label>
-            <div class="tag-chips" id="modal-chips-categoria"></div>
-          </div>
-          <div class="form-group full-width">
-            <label class="form-label">Persones</label>
-            <div class="tag-chips" id="modal-chips-persones"></div>
-            <div class="add-persona">
-              <input type="text" id="modal-input-persona" class="form-input small" placeholder="Afegir persona..." />
-              <button id="modal-btn-add-persona" class="btn-secondary">+ Afegir</button>
-            </div>
-          </div>
-          <div class="form-group full-width">
-            <label class="form-label">Notes</label>
-            <textarea id="modal-notes" class="form-input" rows="2"></textarea>
-          </div>
-        </div>
-
-        <button id="modal-btn-preferida" class="btn-preferida" type="button">☆ Marcar com a preferida</button>
-
-        <div class="modal-actions">
-          <button id="modal-btn-delete" class="btn-delete">🗑️ Eliminar</button>
-          <button id="modal-btn-save" class="btn-upload" style="flex:1;margin-top:0">Guardar canvis</button>
-        </div>
+      <div class="popup-section">
+        <div class="popup-section-title">🎬 Puja vídeos de felicitació</div>
+        <p>Grava un vídeo curt felicitant-la, explicant-li el que li vols dir... <strong>Màxim 1 minut.</strong></p>
       </div>
+
+      <div class="popup-section">
+        <div class="popup-section-title">📝 Notes</div>
+        <p>Afegeix tota la informació possible a les notes: el context, l'anècdota, el lloc exacte... L'Anna podrà cercar les fotos amb IA i com més informació hi hagi, millors seran els resultats.</p>
+      </div>
+
+      <div class="popup-section">
+        <div class="popup-section-title">📱 Instal·lar l'app</div>
+        <p><strong>Android:</strong> et sortirà un missatge automàticament per instal·lar-la.</p>
+        <p><strong>iPhone:</strong> a Safari, toca el botó de compartir ↑ i tria <strong>"Afegir a pantalla d'inici"</strong>.</p>
+      </div>
+
+      <label class="popup-check">
+        <input type="checkbox" id="welcome-dont-show" />
+        <span>No tornis a mostrar</span>
+      </label>
+
+      <button id="welcome-close" class="btn-upload-main" style="margin-top:1rem">Entesos, comencem!</button>
     </div>
   </div>
+</div>
 
-  <!-- POP-UP DE BENVINGUDA -->
-  <div id="welcome-overlay" class="modal-overlay hidden">
-    <div class="modal-card welcome-card">
-      <div class="modal-handle"></div>
-      <div class="modal-body">
-        <div class="welcome-icon">🎁</div>
-        <h2 class="welcome-title">Benvingut/da a AnnApp40!</h2>
-        <p class="welcome-text">Aquesta app és per crear un regal especial per a l'<strong>Anna</strong> pel seu 40è aniversari.</p>
+<!-- ══════════════════════════════════════════
+     POP-UP INFO
+     ══════════════════════════════════════════ -->
+<div id="info-overlay" class="modal-overlay hidden">
+  <div class="popup-sheet">
+    <div class="modal-handle"></div>
+    <button id="info-close" class="modal-close-btn">✕</button>
+    <div class="popup-body" style="padding-top:0.5rem">
+      <h2 class="popup-title" style="margin-bottom:1rem">Com funciona AnnApp40</h2>
 
-        <div class="welcome-section">
-          <h3 class="welcome-section-title">📸 Pujar fotos</h3>
-          <p>Comparteix les fotos que tinguis amb l'Anna: viatges, festes, sopars, moments junts... Recorda etiquetar-les amb l'any, lloc, persones i categoria.</p>
-        </div>
-
-        <div class="welcome-section">
-          <h3 class="welcome-section-title">🎬 Pujar vídeos de felicitació</h3>
-          <p>També pots pujar un vídeo curt felicitant l'Anna! Diu-li el que vulguis sobre ella, alguna anècdota, una felicitació... <strong>Màxim 1 minut de durada</strong>.</p>
-        </div>
-
-        <div class="welcome-section">
-          <h3 class="welcome-section-title">📱 Instal·lar l'app</h3>
-          <p><strong>Android:</strong> et sortirà el missatge i automàticament se t'instal·larà.</p>
-          <p style="margin-top:6px"><strong>iPhone:</strong> a Safari, toca el botó de compartir i tria <strong>"Afegir a pantalla d'inici"</strong>.</p>
-        </div>
-
-        <label class="welcome-check">
-          <input type="checkbox" id="welcome-dont-show" />
-          <span>No tornis a mostrar</span>
-        </label>
-
-        <button id="welcome-close" class="btn-upload">Entesos!</button>
+      <div class="popup-section">
+        <div class="popup-section-title">📤 Pujar fotos i vídeos</div>
+        <p>Arrossega arxius, toca <strong>"Selecciona arxius"</strong> o usa <strong>"Des del Drive"</strong> per triar del teu Google Drive.</p>
       </div>
+      <div class="popup-section">
+        <div class="popup-section-title">🏷️ Etiquetar</div>
+        <p>Omple any, lloc, categoria i persones. Pots aplicar les mateixes etiquetes a totes amb <strong>"Aplicar a totes"</strong> o tocar cada foto per ajustar-la individualment.</p>
+      </div>
+      <div class="popup-section">
+        <div class="popup-section-title">⭐ Foto preferida</div>
+        <p>Marca la foto que més t'agradi — apareixerà destacada a la galeria de l'Anna.</p>
+      </div>
+      <div class="popup-section">
+        <div class="popup-section-title">📝 Notes</div>
+        <p>Com més informació hi posis a les notes, millor funcionarà el cercador intel·ligent de la app de l'Anna.</p>
+      </div>
+      <div class="popup-section">
+        <div class="popup-section-title">🎬 Vídeos</div>
+        <p>Puja un vídeo curt (màx. 1 minut) felicitant l'Anna. Indica qui apareix al vídeo.</p>
+      </div>
+      <div class="popup-section">
+        <div class="popup-section-title">🖼️ Les meves pujades</div>
+        <p>A la pestanya <strong>"Les meves"</strong> pots editar o eliminar les teves pujades.</p>
+      </div>
+      <div class="popup-section">
+        <div class="popup-section-title">📱 Instal·lar l'app</div>
+        <p><strong>Android:</strong> et sortirà un missatge automàticament.</p>
+        <p><strong>iPhone:</strong> a Safari → botó compartir ↑ → <strong>"Afegir a pantalla d'inici"</strong>.</p>
+      </div>
+
+      <button id="info-close-btn" class="btn-upload-main" style="margin-top:1rem">D'acord</button>
     </div>
   </div>
+</div>
 
-  <!-- POP-UP INFO -->
-  <div id="info-overlay" class="modal-overlay hidden">
-    <div class="modal-card welcome-card">
-      <div class="modal-handle"></div>
-      <button id="info-close" class="modal-close">✕</button>
-      <div class="modal-body">
-        <h2 class="welcome-title">Com funciona AnnApp40</h2>
+<div id="toast" class="toast hidden"></div>
 
-        <div class="welcome-section">
-          <h3 class="welcome-section-title">📤 Pujar fotos i vídeos</h3>
-          <p>Arrossega arxius o clica <strong>"Selecciona fotos o vídeos"</strong>. També pots triar fitxers del teu Google Drive amb el botó <strong>"Des del Drive"</strong>.</p>
-        </div>
+<!-- Google APIs -->
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="https://apis.google.com/js/api.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDlVEyT4r5s1M4aRjKVOFXHsnhCXRiiQOI&libraries=places&loading=async&v=weekly&callback=initMapsCallback" defer></script>
 
-        <div class="welcome-section">
-          <h3 class="welcome-section-title">🏷️ Etiquetar</h3>
-          <p>Per cada foto cal: <strong>any, lloc, categoria i persones</strong>. Pots omplir els camps comuns i clicar <strong>"Aplicar a totes"</strong>, o clicar cada foto per ajustar-la individualment.</p>
-        </div>
+<!-- App -->
+<script src="config.js"></script>
+<script src="auth.js"></script>
+<script src="geocoder.js"></script>
+<script src="sheets.js"></script>
+<script src="drive.js"></script>
+<script src="ui.js"></script>
+<script src="app.js"></script>
 
-        <div class="welcome-section">
-          <h3 class="welcome-section-title">⭐ Foto preferida</h3>
-          <p>Marca la foto que més t'agradi com a preferida — apareixerà destacada quan l'Anna consulti l'app.</p>
-        </div>
-
-        <div class="welcome-section">
-          <h3 class="welcome-section-title">🎬 Vídeos de felicitació</h3>
-          <p>Quan pugis un vídeo, només cal indicar qui apareix i un missatge per l'Anna. Que no duri més d'1 minut!</p>
-        </div>
-
-        <div class="welcome-section">
-          <h3 class="welcome-section-title">🖼️ Les meves pujades</h3>
-          <p>A la pestanya <strong>"Les meves"</strong> pots veure totes les fotos/vídeos que has pujat, editar-ne els tags o eliminar-los.</p>
-        </div>
-
-        <div class="welcome-section">
-          <h3 class="welcome-section-title">📱 Instal·lar l'app</h3>
-          <p><strong>Android:</strong> et sortirà el missatge i automàticament se t'instal·larà.</p>
-          <p style="margin-top:6px"><strong>iPhone:</strong> a Safari, toca el botó de compartir i tria <strong>"Afegir a pantalla d'inici"</strong>.</p>
-        </div>
-
-        <button id="info-close-btn" class="btn-upload">D'acord</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="toast" class="toast hidden"></div>
-
-  <!-- Google APIs -->
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <script src="https://apis.google.com/js/api.js"></script>
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDlVEyT4r5s1M4aRjKVOFXHsnhCXRiiQOI&libraries=places,marker&loading=async&v=weekly&callback=initMapsCallback" defer></script>
-
-  <!-- App scripts -->
-  <script src="config.js"></script>
-  <script src="auth.js"></script>
-  <script src="geocoder.js"></script>
-  <script src="sheets.js"></script>
-  <script src="drive.js"></script>
-  <script src="ui.js"></script>
-  <script src="app.js"></script>
 </body>
 </html>

@@ -16,7 +16,6 @@ const CONFIG = {
     'https://www.googleapis.com/auth/spreadsheets'
   ].join(' '),
 
-  // Anys disponibles al desplegable
   ANYS: (() => {
     const anys = [];
     for (let y = new Date().getFullYear(); y >= 1985; y--) anys.push(y);
@@ -25,19 +24,19 @@ const CONFIG = {
 
   PERSONES_INICIALS: ['Roger', 'Ramon', 'Jordi'],
 
-  // Categories — es poden afegir dinàmicament
   CATEGORIES: [
-    { emoji: '🎉', nom: 'Festa' },
-    { emoji: '✈️', nom: 'Viatges' },
-    { emoji: '🏖️', nom: 'Platja' },
-    { emoji: '🍽️', nom: 'Dinar' },
-    { emoji: '🎂', nom: 'Aniversari' },
-    { emoji: '🌙', nom: 'Sopar' },
-    { emoji: '🎄', nom: 'Nadal' },
-    { emoji: '⚽', nom: 'Esport' },
-    { emoji: '🔵🔴', nom: 'Barça' },
-    { emoji: '🔥', nom: 'Barbacoa' },
-    { emoji: '🎤', nom: 'Karaoke' },
-    { emoji: '🍻', nom: 'Bar' },
+    { nom: 'Vallvis' },
+    { nom: 'Happy Family' },
+    { nom: 'ICR' },
+    { nom: 'Wiki-Wiki' },
+    { nom: 'Menéndez' },
+    { nom: 'DMS' },
+    { nom: 'Senes' },
+    { nom: 'Aran' },
+    { nom: 'Festa' },
+    { nom: 'Aniversari' },
+    { nom: 'Viatges' },
+    { nom: 'Platja' },
+    { nom: 'Barbacoa' },
   ]
 };
