@@ -54,7 +54,6 @@ self.addEventListener('fetch', e => {
     e.respondWith(
       caches.match(e.request).then(cached => {
         if (cached) return cached;
-        // Generar si no está en cache
         const isLarge = url.endsWith('/icon-512.png');
         const data = b64ToBytes(isLarge ? ICON_512 : ICON_192);
         return new Response(data, {headers: {'Content-Type': 'image/png'}});
@@ -63,11 +62,20 @@ self.addEventListener('fetch', e => {
     return;
   }
 
-  // No interceptar APIs externes
+  // No interceptar APIs externes ni navegacions amb redirect
   if (url.includes('googleapis.com') || url.includes('accounts.google.com') ||
       url.includes('maps.google') || url.includes('emailjs.com') ||
       url.includes('generativelanguage')) return;
 
+  // Navegació HTML: network-first sense cache per evitar problemes de redirect
+  if (e.request.mode === 'navigate') {
+    e.respondWith(
+      fetch(e.request).catch(() => caches.match(e.request))
+    );
+    return;
+  }
+
+  // Recursos estàtics: cache-first
   e.respondWith(
     caches.match(e.request).then(cached => {
       const net = fetch(e.request).then(res => {
