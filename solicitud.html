@@ -5,16 +5,76 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>AnnApp40 — Sol·licitar accés</title>
   <meta name="theme-color" content="#0a84ff" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230a84ff'/><text x='16' y='22' text-anchor='middle' font-size='20' font-family='-apple-system,sans-serif' font-weight='700' fill='white'>A</text></svg>" />
+  <link rel="icon" href="icon-192.png" />
   <link rel="stylesheet" href="main.css" />
+  <style>
+    .solicitud-screen {
+      min-height: 100dvh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem 1rem;
+      background:
+        radial-gradient(ellipse at 25% 20%, rgba(10,132,255,0.1) 0%, transparent 55%),
+        radial-gradient(ellipse at 75% 80%, rgba(90,200,250,0.06) 0%, transparent 50%),
+        var(--bg);
+    }
+    .solicitud-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-xl);
+      padding: 2rem 1.75rem 2rem;
+      width: 100%;
+      max-width: 400px;
+      animation: fadeUp 0.5s ease both;
+    }
+    .solicitud-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      margin-bottom: 0.35rem;
+      text-align: center;
+    }
+    .solicitud-sub {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+    .solicitud-error {
+      background: rgba(239,68,68,0.08);
+      border: 1px solid rgba(239,68,68,0.25);
+      border-radius: var(--radius-sm);
+      color: var(--red);
+      font-size: 0.85rem;
+      padding: 0.65rem 0.9rem;
+      margin-bottom: 0.85rem;
+      text-align: center;
+    }
+    .solicitud-back {
+      display: block;
+      text-align: center;
+      margin-top: 1rem;
+      font-size: 0.84rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: var(--transition);
+    }
+    .solicitud-back:hover { color: var(--accent); }
+    .solicitud-success { text-align: center; }
+    .solicitud-success-icon { font-size: 3rem; margin-bottom: 0.75rem; }
+    .field-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 0.85rem; }
+    .field-group:last-of-type { margin-bottom: 1.25rem; }
+  </style>
 </head>
 <body>
 
 <div class="solicitud-screen">
-
   <div class="solicitud-card">
 
-    <!-- Logo -->
     <div class="login-logo" style="margin-bottom:1.5rem">
       <div class="login-logo-icon">
         <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
@@ -29,19 +89,17 @@
       <h2 class="solicitud-title">Sol·licitar accés</h2>
       <p class="solicitud-sub">Envia una sol·licitud i en Roger t'afegirà a la llista en breu.</p>
 
-      <div class="form-field" style="margin-bottom:0.85rem">
+      <div class="field-group">
         <label class="form-label" for="input-nom">El teu nom</label>
         <input type="text" id="input-nom" class="form-input"
           placeholder="Anna, Jordi, Maria..." autocomplete="name" />
       </div>
 
-      <div class="form-field" style="margin-bottom:1.25rem">
+      <div class="field-group">
         <label class="form-label" for="input-email">El teu Gmail</label>
         <input type="email" id="input-email" class="form-input"
           placeholder="exemple@gmail.com" autocomplete="email" inputmode="email" />
-        <p class="notes-hint" style="margin-top:6px">
-          Ha de ser el compte de Google amb el qual vols accedir a l'app.
-        </p>
+        <p class="notes-hint">Ha de ser el compte de Google amb el qual vols accedir.</p>
       </div>
 
       <div id="error-msg" class="solicitud-error hidden"></div>
@@ -58,7 +116,7 @@
       <div class="solicitud-success-icon">✅</div>
       <h2 class="solicitud-title">Sol·licitud enviada!</h2>
       <p class="solicitud-sub">En Roger ha rebut el teu email i t'afegirà a la llista en breu. Un cop t'avisi, torna a entrar a l'app.</p>
-      <a href="/" class="btn-upload-main" style="text-decoration:none;margin-top:1rem;display:flex;justify-content:center">
+      <a href="/" class="btn-upload-main" style="text-decoration:none;display:flex;justify-content:center;margin-top:1rem">
         Tornar al login
       </a>
     </div>
@@ -66,80 +124,10 @@
   </div>
 </div>
 
-<div id="toast" class="toast hidden"></div>
-
-<style>
-.solicitud-screen {
-  min-height: 100dvh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 1.5rem 1rem;
-  background:
-    radial-gradient(ellipse at 25% 20%, rgba(10,132,255,0.1) 0%, transparent 55%),
-    radial-gradient(ellipse at 75% 80%, rgba(90,200,250,0.06) 0%, transparent 50%),
-    var(--bg);
-}
-
-.solicitud-card {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-xl);
-  padding: 2rem 1.75rem 2rem;
-  width: 100%;
-  max-width: 400px;
-  animation: fadeUp 0.5s ease both;
-}
-
-.solicitud-title {
-  font-size: 1.3rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  color: var(--text);
-  margin-bottom: 0.35rem;
-  text-align: center;
-}
-
-.solicitud-sub {
-  font-size: 0.88rem;
-  color: var(--text-muted);
-  line-height: 1.5;
-  margin-bottom: 1.5rem;
-  text-align: center;
-}
-
-.solicitud-error {
-  background: rgba(239,68,68,0.08);
-  border: 1px solid rgba(239,68,68,0.25);
-  border-radius: var(--radius-sm);
-  color: var(--red);
-  font-size: 0.85rem;
-  padding: 0.65rem 0.9rem;
-  margin-bottom: 0.85rem;
-  text-align: center;
-}
-
-.solicitud-back {
-  display: block;
-  text-align: center;
-  margin-top: 1rem;
-  font-size: 0.84rem;
-  color: var(--text-muted);
-  text-decoration: none;
-  transition: var(--transition);
-}
-.solicitud-back:hover { color: var(--accent); }
-
-.solicitud-success { text-align: center; }
-.solicitud-success-icon { font-size: 3rem; margin-bottom: 0.75rem; }
-</style>
-
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script>
   emailjs.init('-EpStee0U9WoRlxLZ');
 
-  // Aplicar tema guardat
   const savedTheme = localStorage.getItem('annapp40_theme') || 'light';
   document.documentElement.dataset.theme = savedTheme;
 
@@ -186,10 +174,9 @@
     }
   });
 
-  // Enter key
-  ['input-nom','input-email'].forEach(id => {
+  ['input-nom', 'input-email'].forEach(id => {
     document.getElementById(id).addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') document.getElementById('btn-enviar').click();
+      if (e.key === 'Enter') { e.preventDefault(); document.getElementById('btn-enviar').click(); }
     });
   });
 </script>
