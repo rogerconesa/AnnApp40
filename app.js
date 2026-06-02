@@ -295,13 +295,6 @@ async function handleUpload() {
   UI.setUploadLoading(true);
   let uploaded = 0, errors = [];
 
-  // Refrescar token abans de començar per evitar caducitat durant la pujada
-  try {
-    await Auth.refreshToken();
-  } catch(e) {
-    console.warn('No s\'ha pogut refrescar el token, continuant amb l\'actual:', e);
-  }
-
   for (let i = 0; i < files.length; i++) {
     const item = files[i];
     const tags = currentTags[i];
