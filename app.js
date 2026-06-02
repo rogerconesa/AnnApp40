@@ -265,6 +265,13 @@ async function handleUpload() {
   UI.setUploadLoading(true);
   let uploaded = 0, errors = [];
 
+  // Refrescar token abans de començar per evitar caducitat durant la pujada
+  try {
+    await Auth.refreshToken();
+  } catch(e) {
+    console.warn('No s\'ha pogut refrescar el token, continuant amb l\'actual:', e);
+  }
+
   for (let i = 0; i < files.length; i++) {
     const item = files[i];
     const tags = currentTags[i];
@@ -294,7 +301,10 @@ async function handleUpload() {
         lat, lng, tipus: item.isVideo ? 'video' : 'foto', preferida: tags.preferida || false,
       });
       uploaded++;
-    } catch(err) { console.error(err); errors.push(item.name); }
+    } catch(err) {
+      console.error('Error pujant', item.name, err);
+      errors.push(item.name + ' (' + (err.message || 'error') + ')');
+    }
   }
 
   UI.setUploadLoading(false);

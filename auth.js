@@ -106,6 +106,26 @@ const Auth = (() => {
   function getProfile() { return _userProfile; }
   function isLoggedIn() { return !!_accessToken; }
 
-  return { init, login, logout, getToken, getProfile, isLoggedIn };
+  // ── Refrescar token (quan caduca durant l'ús) ──
+  function refreshToken() {
+    return new Promise((resolve, reject) => {
+      if (!_tokenClient) { reject(new Error('Token client no inicialitzat')); return; }
+      // Substituïm temporalment el callback per capturar el nou token
+      const original = _tokenClient.callback;
+      _tokenClient.callback = (resp) => {
+        _tokenClient.callback = original;
+        if (resp.error || !resp.access_token) {
+          reject(new Error(resp.error || 'No s\'ha pogut refrescar el token'));
+          return;
+        }
+        _accessToken = resp.access_token;
+        sessionStorage.setItem('annapp40_token', _accessToken);
+        resolve(_accessToken);
+      };
+      _tokenClient.requestAccessToken({ prompt: '' });
+    });
+  }
+
+  return { init, login, logout, getToken, getProfile, isLoggedIn, refreshToken };
 
 })();

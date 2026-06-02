@@ -38,5 +38,7 @@ const CONFIG = {
     { nom: 'Viatges' },
     { nom: 'Platja' },
     { nom: 'Barbacoa' },
+    { nom: 'Bessones' },
+    { nom: 'Amb Aquesta Medalla' },
   ]
 };
