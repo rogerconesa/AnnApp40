@@ -245,23 +245,53 @@ function _showInstallBanner() {
 }
 
 // ── Upload ────────────────────────────────────
+let _uploadInProgress = false;
+
 async function handleUpload() {
+  // Guard contra doble clic / doble pujada
+  if (_uploadInProgress) { console.warn('Pujada ja en curs, ignorant clic'); return; }
+
   const files = UI.getFiles();
   if (files.length === 0) { UI.showToast('Selecciona almenys un arxiu', 'error'); return; }
 
   UI.applyCommonTagsToAll();
   const currentTags = UI.getPhotoTags();
 
-  const invalids = currentTags.filter((t, i) => {
-    if (files[i].isVideo) return t.persones.length === 0;
-    return !t.any || !t.lloc || t.categoria.length === 0 || t.persones.length === 0;
+  // Validació detallada: identificar què falta a cada element
+  const problemes = [];
+  currentTags.forEach((t, i) => {
+    const nom = files[i].name.length > 20 ? files[i].name.substring(0,18) + '…' : files[i].name;
+    const falta = [];
+    if (files[i].isVideo) {
+      if (t.persones.length === 0) falta.push('qui surt');
+    } else {
+      if (!t.any)                  falta.push('any');
+      if (!t.lloc)                 falta.push('lloc');
+      if (t.categoria.length === 0) falta.push('categoria');
+      if (t.persones.length === 0) falta.push('persones');
+    }
+    if (falta.length > 0) problemes.push({ nom, falta });
   });
 
-  if (invalids.length > 0) {
-    UI.showToast(`${invalids.length} element${invalids.length !== 1 ? 's' : ''} sense tags complets`, 'error');
+  if (problemes.length > 0) {
+    // Si tots els elements tenen el mateix problema, missatge global
+    const totsIgual = problemes.length === currentTags.length;
+    if (totsIgual && problemes.length > 1) {
+      // Camps comuns que falten a tots
+      const comuns = problemes[0].falta.filter(f => problemes.every(p => p.falta.includes(f)));
+      if (comuns.length > 0) {
+        UI.showToast('Falta omplir: ' + comuns.join(', '), 'error');
+        return;
+      }
+    }
+    // Missatge del primer element amb problema
+    const p = problemes[0];
+    const resta = problemes.length > 1 ? ` (i ${problemes.length - 1} més)` : '';
+    UI.showToast(`"${p.nom}": falta ${p.falta.join(', ')}${resta}`, 'error');
     return;
   }
 
+  _uploadInProgress = true;
   UI.setUploadLoading(true);
   let uploaded = 0, errors = [];
 
@@ -308,6 +338,7 @@ async function handleUpload() {
   }
 
   UI.setUploadLoading(false);
+  _uploadInProgress = false;
   UI.showProgress(100, 'Completat!');
   if (errors.length === 0) UI.showSuccess(uploaded);
   else if (uploaded > 0) UI.showToast(`${uploaded} pujats, ${errors.length} amb error`, '');
@@ -328,7 +359,16 @@ async function renderMyPhotos() {
   try {
     const all     = await Sheets.readAll();
     const profile = Auth.getProfile();
-    const mine    = all.filter(p => p.pujatEmail === profile.email || p.pujatNom === profile.name);
+    let mine      = all.filter(p => p.pujatEmail === profile.email || p.pujatNom === profile.name);
+
+    // Deduplicar per fileId (xarxa de seguretat contra duplicats)
+    const vistos = new Set();
+    mine = mine.filter(p => {
+      if (vistos.has(p.fileId)) return false;
+      vistos.add(p.fileId);
+      return true;
+    });
+
     loading.classList.add('hidden');
     if (mine.length === 0) { empty.classList.remove('hidden'); return; }
 
