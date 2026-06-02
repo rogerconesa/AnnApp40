@@ -1337,3 +1337,17 @@ textarea.form-input { line-height: 1.5; }
   .remove-btn { opacity: 1 !important; }
   .preview-star-btn { opacity: 1 !important; }
 }
+
+/* ── Versió sota el logo ─────────────────────── */
+.header-logo-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+}
+.header-logo-version {
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+  margin-top: 2px;
+}
