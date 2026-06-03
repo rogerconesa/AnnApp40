@@ -13,7 +13,7 @@ const Sheets = (() => {
     };
   }
 
-  async function appendRow(data) {
+  async function appendRow(data, _isRetry) {
     const { id, fileId, url, any, lloc, persones, categoria, notes, pujatNom, pujatEmail, lat, lng, tipus, preferida } = data;
     const row = [
       id, fileId, url,
@@ -33,13 +33,17 @@ const Sheets = (() => {
       method: 'POST', headers: _headers(),
       body: JSON.stringify({ values: [row] }),
     });
+    if (res.status === 401 && !_isRetry && Auth.refreshToken) {
+      await Auth.refreshToken();
+      return appendRow(data, true);
+    }
     if (!res.ok) throw new Error('Error Sheets: ' + res.status);
     return res.json();
   }
 
   async function readAll() {
     const range    = `'${CONFIG.SHEET_NAME}'!A2:O`;
-    const endpoint = `${BASE}/${CONFIG.SPREADSHEET_ID}/values/${encodeURIComponent(range)}`;
+    const endpoint = `${BASE}/${CONFIG.SPREADSHEET_ID}/values/${encodeURIComponent(range)}?valueRenderOption=UNFORMATTED_VALUE`;
     const res = await fetch(endpoint, { headers: _headers() });
     if (!res.ok) throw new Error('Error llegint Sheets');
     const data = await res.json();

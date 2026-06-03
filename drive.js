@@ -8,7 +8,7 @@ const Drive = (() => {
   const META_URL = 'https://www.googleapis.com/drive/v3/files';
 
   // ── Pujar fitxer local ────────────────────────
-  async function uploadFile(file, onProgress) {
+  async function uploadFile(file, onProgress, _isRetry) {
     const token    = Auth.getToken();
     const metadata = { name: file.name, parents: [CONFIG.DRIVE_FOLDER_ID] };
     const form     = new FormData();
@@ -19,9 +19,28 @@ const Drive = (() => {
       xhr.upload.addEventListener('progress', (e) => {
         if (e.lengthComputable && onProgress) onProgress(Math.round((e.loaded / e.total) * 100));
       });
-      xhr.addEventListener('load', () => {
-        if (xhr.status >= 200 && xhr.status < 300) resolve(JSON.parse(xhr.responseText));
-        else reject(new Error('Error pujant: ' + xhr.status));
+      xhr.addEventListener('load', async () => {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          resolve(JSON.parse(xhr.responseText));
+        } else if (xhr.status === 401 && !_isRetry && Auth.refreshToken) {
+          // Token caducat: renovar i reintentar UNA vegada
+          console.warn('Token caducat, renovant automàticament...');
+          try {
+            await Auth.refreshToken();
+            const result = await uploadFile(file, onProgress, true);
+            resolve(result);
+          } catch(e) {
+            reject(new Error('Sessió caducada. Cal tornar a iniciar sessió.'));
+          }
+        } else {
+          console.error('Drive upload error:', xhr.status, xhr.responseText);
+          let msg = 'Error pujant (codi ' + xhr.status + ')';
+          try {
+            const err = JSON.parse(xhr.responseText);
+            msg = err.error?.message || msg;
+          } catch(e) {}
+          reject(new Error(msg));
+        }
       });
       xhr.addEventListener('error', () => reject(new Error('Error de xarxa')));
       xhr.open('POST', BASE_URL);
@@ -45,11 +64,12 @@ const Drive = (() => {
   // ── Fer públic ────────────────────────────────
   async function makePublic(fileId) {
     const token = Auth.getToken();
-    await fetch(`${META_URL}/${fileId}/permissions`, {
+    const res = await fetch(`${META_URL}/${fileId}/permissions`, {
       method: 'POST',
       headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
       body: JSON.stringify({ role: 'reader', type: 'anyone' }),
     });
+    if (!res.ok) console.warn('makePublic error:', res.status, await res.text().catch(() => ''));
   }
 
   // ── Eliminar ──────────────────────────────────
@@ -83,7 +103,7 @@ const Drive = (() => {
     const picker = new google.picker.PickerBuilder()
       .addView(docsView)
       .setOAuthToken(token)
-      .setDeveloperKey(CONFIG.MAPS_API_KEY)
+      .setDeveloperKey(CONFIG.PICKER_API_KEY)
       .enableFeature(google.picker.Feature.MULTISELECT_ENABLED)
       .setCallback(async (data) => {
         if (data.action !== google.picker.Action.PICKED) return;
