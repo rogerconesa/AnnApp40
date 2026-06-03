@@ -28,6 +28,8 @@ const CONFIG = {
     { nom: 'Vallvis' },
     { nom: 'Happy Family' },
     { nom: 'ICR' },
+    { nom: 'Sexy' },
+    { nom: 'Peques' },
     { nom: 'Wiki-Wiki' },
     { nom: 'Menéndez' },
     { nom: 'DMS' },
