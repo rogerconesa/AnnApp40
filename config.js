@@ -22,14 +22,12 @@ const CONFIG = {
     return anys;
   })(),
 
-  PERSONES_INICIALS: ['Roger', 'Ramon', 'Jordi'],
+  PERSONES_INICIALS: [],   // cada usuari construeix la seva llista
 
   CATEGORIES: [
     { nom: 'Vallvis' },
     { nom: 'Happy Family' },
     { nom: 'ICR' },
-    { nom: 'Sexy' },
-    { nom: 'Peques' },
     { nom: 'Wiki-Wiki' },
     { nom: 'Menéndez' },
     { nom: 'DMS' },

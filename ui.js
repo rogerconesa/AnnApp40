@@ -78,7 +78,7 @@ const UI = (() => {
   }
 
   function _renderAllCategoryChips() {
-    ['chips-categoria', 'edit-photo-chips-categoria', 'modal-chips-categoria'].forEach(id => {
+    ['chips-categoria', 'edit-photo-chips-categoria', 'edit-video-chips-categoria', 'modal-chips-categoria', 'common-video-chips-categoria'].forEach(id => {
       const container = document.getElementById(id);
       if (!container) return;
       const selected = [...container.querySelectorAll('.chip.selected')].map(c => c.dataset.value);
@@ -453,8 +453,8 @@ const UI = (() => {
 
     const container = document.getElementById('edit-photo-chips-persones');
     container.innerHTML = '';
-    const all = [...new Set([...CONFIG.PERSONES_INICIALS, ...tags.persones])];
-    all.forEach(nom => _addChip(container, nom, tags.persones.includes(nom)));
+    const allPersones = [...new Set([..._persones, ...tags.persones])];
+    allPersones.forEach(nom => _addChip(container, nom, tags.persones.includes(nom)));
 
     const prefBtn = document.getElementById('edit-photo-preferida');
     if (prefBtn) {
@@ -511,7 +511,20 @@ const UI = (() => {
   }
 
   // ── Persones comunes ──────────────────────────
-  let _persones = [...CONFIG.PERSONES_INICIALS];
+  const _PERSONES_KEY = 'annapp40_persones_' + (Auth.getProfile()?.email || 'guest');
+
+  function _loadPersones() {
+    try {
+      const saved = localStorage.getItem(_PERSONES_KEY);
+      return saved ? JSON.parse(saved) : [...CONFIG.PERSONES_INICIALS];
+    } catch { return [...CONFIG.PERSONES_INICIALS]; }
+  }
+
+  function _savePersones() {
+    try { localStorage.setItem(_PERSONES_KEY, JSON.stringify(_persones)); } catch {}
+  }
+
+  let _persones = _loadPersones();
 
   function initChipsPersones() {
     _renderPersones([]);
@@ -520,7 +533,10 @@ const UI = (() => {
       const nom   = input.value.trim();
       if (!nom) return;
       const selected = getSelectedPersones();
-      if (!_persones.includes(nom)) _persones.push(nom);
+      if (!_persones.includes(nom)) {
+        _persones.push(nom);
+        _savePersones();
+      }
       selected.push(nom);
       _renderPersones(selected);
       input.value = '';
